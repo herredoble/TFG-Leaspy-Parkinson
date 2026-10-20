@@ -1,0 +1,110 @@
+function [MAE,NMAE,auc,percent_PD_CU,percent_PD_MCI,corr_PD_MCI_age,corr_PD_MCI_reserve]=...
+    build_rpdpm_PPMI(y,ages,labels,diagnose,classes,ranges,...
+    idx_train,idx_test,btstrp,fich_name,feat_names)
+
+% Optimization parameters
+loss_type = 'logistic'; % robust estimation loss function type
+fit_type = 'proposed'; % fitting function type
+L_max = 50; % maximum number of alternating iterations
+L_min = 10; % minimum number of alternating iterations
+
+%% data
+y_train = y(:, idx_train, :);
+ages_train = ages(idx_train, :);
+labels_train = labels(idx_train, :);
+diagnose_train = diagnose(:, idx_train);
+% subjects_train = subjects(idx_train, :);
+
+y_test = y(:, idx_test, :);
+ages_test = ages(idx_test, :);
+labels_test = labels(idx_test, :);
+% diagnose_test = diagnose(:, idx_test);
+% subjects_test = subjects(idx_test, :);
+
+
+%% Robust Parametric DPM Training (model)
+% Optimization options
+optim_options = optimoptions('lsqnonlin', 'Display', 'none', 'Jacobian', 'off', 'DerivativeCheck', 'off', 'MaxIter', 1e+3, 'TolFun', 1e-6, 'TolX', 1e-6, 'Algorithm', 'trust-region-reflective');
+
+
+[Sigma, A, B, C, D, G, DPS_train, Idx_train, idx_valid]=...
+    build_model_RPDPM(y_train,ages_train,labels_train,diagnose_train,...
+    classes,ranges,loss_type, fit_type, optim_options,btstrp,L_max,L_min);
+
+% load('./data/workspace_RPDPM_PD_LSHSMA_10_bstrp.mat', 'Sigma', 'A', 'B', 'C', 'D', 'G','posterior_bayes' );
+
+% Visualizing the DPM results
+% plot_marker_order(C, biomarkers);
+% plot_dps_pdf(DPS_train, C, labels_train, classes, biomarkers, Idx_train);
+% plot_trajectory(A, B, C, D, G, DPS_train, y_train, labels_train, classes, biomarkers, Idx_train, fit_type);
+
+% plot_marker_order(C, feat_names);
+% plot_trajectory(A, B, C, D, G, DPS_train, y_train, labels_train, classes, feat_names, Idx_train, fit_type);
+
+%% Robust Parametric DPM Testing
+fprintf('Test \t');
+[DPS_test,NMAE_test,MAE_test]=get_MAE_RPDPM_v1(y_test,feat_names,ages_test,Sigma,A,B,C,D,G,loss_type, fit_type, optim_options,btstrp);
+
+%% Robust Parametric DPM Validation
+% y_val=y_train(:, idx_valid, :);
+% ages_val = ages_train(idx_valid, :);
+% fprintf('Validation \t');
+% [DPS_val,NMAE_val,MAE_val]=get_MAE_RPDPM_v1(y_val,feat_names,ages_val,Sigma,A,B,C,D,G,loss_type, fit_type, optim_options,btstrp);
+
+%% Robust Parametric DPM train
+fprintf('Train \t');
+[DPS_train_2,NMAE_train,MAE_train]=get_MAE_RPDPM_v1(y_train,feat_names,ages_train,Sigma,A,B,C,D,G,loss_type, fit_type, optim_options,btstrp);
+
+%% Robust Parametric DPM Classification Training
+% Training Bayesian classifiers per bootstrap
+UC = numel(classes); % number of unique class labels
+dist_models = repmat({'kernel'}, 1, UC); % distribution models for likelihoods
+posterior_bayes = cell(UC, btstrp);
+likelihood_bayes = cell(UC, btstrp);
+evidence_bayes = cell(1, btstrp);
+prior_bayes = zeros(UC, btstrp);
+for n = 1 : btstrp
+    [posterior_bayes(:, n), likelihood_bayes(:, n), prior_bayes(:, n), evidence_bayes{n}] = bayes_train(DPS_train(:, :, n), labels_train(Idx_train(:, n), :), classes, dist_models);
+end
+
+%% Robust Parametric DPM Classification Testing
+fprintf('Test \t');
+auc_test=get_AUC_RPDPM_v1(DPS_test,posterior_bayes,labels_test,classes,btstrp);
+[ages_onset,gt_onset,m_test]=get_Onset_MCI_PPMI(DPS_test,...
+    posterior_bayes,ages_test,labels_test,btstrp);
+onset_test=[ages_onset,gt_onset];
+
+%% Robust Parametric DPM Classification Validation
+% labels_val = labels_train(idx_valid, :);
+% fprintf('Validation \t');
+% auc_val=get_AUC_RPDPM_v1(DPS_val,posterior_bayes,labels_val,classes,btstrp);
+
+%% Robust Parametric DPM Classification Validation
+fprintf('Train \t');
+auc_train=get_AUC_RPDPM_v1(DPS_train_2,posterior_bayes,labels_train,classes,btstrp);
+[ages_onset,gt_onset,m_train]=get_Onset_MCI_PPMI(DPS_train_2,...
+    posterior_bayes,ages_train,labels_train,btstrp);
+onset_train=[ages_onset,gt_onset];
+
+%% Metrics
+auc=[auc_test',auc_train'];
+NMAE=[NMAE_test,NMAE_train];
+MAE(:,:,1)=MAE_test';
+MAE(:,:,2)=MAE_train';
+percent_PD_CU=[m_test.percentage_PD_CU,m_train.percentage_PD_CU];
+percent_PD_MCI=[m_test.percentage_PD_MCI,m_train.percentage_PD_MCI];
+corr_PD_MCI_age=[m_test.corr_PD_MCI_age,m_train.corr_PD_MCI_age];
+corr_PD_MCI_reserve=[m_test.corr_PD_MCI_reserve,m_train.corr_PD_MCI_reserve];
+
+
+%% save model
+save(fich_name,'Sigma','A','B','C','D','G','loss_type', ...
+    'fit_type', 'optim_options','btstrp','auc','MAE','NMAE',...
+    'onset_test','onset_train','m_test','m_train',...
+    'DPS_train', 'Idx_train', 'idx_valid');
+
+end
+
+
+
+

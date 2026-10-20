@@ -1,0 +1,199 @@
+\chapter{Inferencia estadística. Anova y Chi-cuadrado.}
+
+La inferencia estadística es una técnica que obtiene, a partir de una muestra, suposiciones sobre la población. Para ello utiliza distintas pruebas de hipótesis y otros métodos estadísticos, entre las que se encuentran la prueba t, Chi-cuadrado o el análisis de varianza, utilizados para encontrar distinciones entre grupos \cite{INFERENC93:online}.  \\
+
+Su procedimiento se basa, teniendo una hipótesis sobre cierta población, en utilizar múltiples herramientas sobre una muestra para saber si la afirmación es valida o no. Para entender esto bien, primero hay que aclarar algunos conceptos previos.\\
+
+Teniendo ya una muestra seleccionada, existen dos hipótesis opuestas a la hora de llevar a cabo el estudio. Estas se rechazarán o aceptarán en función del resultado del estudio de los datos seleccionados: 
+
+\begin{itemize}
+	\item Hipótesis nula (H0): Suposición que indica que una característica no es diferente entre grupos. Con el transcurso de la investigación se pretende demostrar que no es cierta. Por ejemplo, podría ser que dos variables no estén relacionadas.
+	\item Hipótesis alternativa (H1): es lo contrario a la hipótesis nula. Es la conclusión que el investigador intenta afirmar tras su estudio e indica que sí habría una diferencia entre los grupos. En este caso sería que las variable si fueran dependientes entre si.
+\end{itemize}
+
+Para decidir si se rechaza o mantiene H0 se lleva a cabo una prueba de hipótesis. Esta está formada por técnicas estadísticas que prueban la suposición inicial con los datos seleccionados. Con este procedimiento se comprueba si no hay diferencia o relación. \\
+
+En este proceso siempre existe un porcentaje de error, denominado nivel de significación o $\alpha$, el cual suele estar en torno al 5\%. Este factor indica la probabilidad de rechazar la hipótesis nula y que en verdad sea cierta. Esto es debido a la realización del estudio a partir de una muestra, la cual puede o no asemejarse a la población. El peor caso sucedería cuando los individuos seleccionados se desvían mucho de la norma, lo que llevaría a obtener una conclusión errónea.\\
+
+Otro término importante es el valor \textit{p}, el cual se utiliza para decidir si rechazar la hipótesis nula. Cuando el valor p esté por encima del nivel de significación, se mantendrá, mientras que cuando este por debajo podremos rechazarla y aceptar la hipótesis alternativa \cite{ValorpSi12:online}.\\
+
+Entre las pruebas de análisis, algunas de las más destacadas son el Análisis de Varianza (ANOVA) y el método Chi-cuadrado. En función del tipo de variables estudiadas se usaran una u otra. Estos factores se pueden clasificar en:
+\begin{itemize}
+	\item Variable cuantitativa: Se pueden medir numéricamente, como las cantidades. Se estudian en ANOVA.
+	\item Variable cualitativa: Aquellas que no son medibles, como características o categorías. Son analizadas en pruebas como Chi-cuadrado.
+\end{itemize}
+
+\section{Anova}
+
+El Análisis de la Varianza (ANOVA) es una técnica estadística utilizada para comprobar si hay una diferencia significativa entre la media de distintos grupos. Con ella se mide el comportamiento de una variable dependiente en función de otra independiente. Como por ejemplo, se puede medir la influencia de varios medicamentos en los niveles de azúcar de diferentes grupos. \cite{INFERENC93:online} \\
+
+Con este método se estudia la prueba F, la cual mide el ratio entre la varianza de las medias de los grupos y el promedio de la varianza dentro de los mismos. Además, sigue una distribución conocida como "F de Fisher-Snedecor”
+
+\begin{center}
+	$F = \frac{Variaci\acute{o}n\quad entre\quad las\quad medias\quad de\quad las\quad muestras}{Variaci\acute{o}n\quad dentro\quad de\quad las\quad muestras}$
+\end{center}
+
+Siendo la siguiente ecuación la fórmula de la varianza:
+\begin{center}
+	$\sigma^{2} = \frac{\sum_{1}^{N} (x_{i}-\bar{X})^{2}}{N}$
+\end{center}
+
+Al cumplirse la hipótesis nula, el $F_{ratio}$  es igual a 1. Este valor aumentará al incrementar la diferencia entre las medias de los grupos. Como consecuencia, la probabilidad de que la distribución adquiera valores extremos sera menor, y también será más pequeño el \textit{p-valor}. \\
+
+Con esta herramienta se mide la relación entre la varianza dentro de los grupos y la varianza entre grupos. Se concluye una mayor probabilidad de que existan diferencias significativas si la varianza dentro de los conjuntos es menor que entre ellos. Este resultado se muestra en la prueba F, siendo mayor al existir distinciones significativas, implicando que la hipótesis nula no es compatible.\\
+
+Entre los conceptos de los que es necesario aclarar su significado se encuentran: 
+\begin{itemize}
+	
+	\item Variable dependiente: elemento medido y que se ve afectado por la o las variables independientes.
+	\item Variable independiente: elemento que pueden ser uno o mas y que afectan a la variable dependiente.
+\end{itemize}
+
+Además, la variable independientes, también llamadas factores, pueden tener diferentes valores, denominados niveles. En función de la cantidad de variables independientes se llevará a cabo un proceso distinto.
+
+\subsubsection{Análisis simple de la varianza}
+Este tipo de análisis, también llamado 'One-Way ANOVA', se utiliza para la comparación de la media de dos grupos con una sola variable independiente. Se estudia si existen diferencias significativas entre las medias de una variable aleatoria y los diferentes niveles de un factor. Este método es conveniente para los casos en los que el factor tiene dos o más niveles, ya que así se puede determinar si los diferentes niveles tienen un efecto significativo sobre el valor de la variable dependiente.\\
+
+Para definir las hipótesis en un ANOVA de un factor, consideramos $\mu$ como la media de todas las observaciones sin tener en cuenta los niveles, y $\alpha_{i}$ el efecto introducido por el nivel \textit{i}. La media de cada nivel y las distintas hipótesis serán: 
+\begin{center}
+	Media: $\mu_{i} = \mu + \alpha_{i} $
+
+$H_{0}$: El efecto de los niveles es nulo $(\mu_{1} = \mu_{2} = \mu_{k} = \mu)$\\
+$H_{1}$: Mínimo una media se desplaza debido a un nivel $(\alpha_{i} \neq 0)$
+\end{center}
+
+Para obtener una conclusión sobre si rechazar o no la hipótesis nula, es necesario comparar las medias de la variación entre diferentes niveles con la medida de la variación dentro de cada nivel. Si el primer valor es significativamente mayor que el segundo, se podrá rechazar la hipótesis nula. Esto indicará la influencia del factor sobre la variable dependiente \cite{terradez2003analisis}.\\
+
+Para detectar la diferencia entre medias, se estudia la varianza total, la cual se obtiene dividiendo las distintas sumas de cuadrados entre los respectivos grados de libertad. Estos valores también son denominados cuadrados medios, cuyo análisis forma parte de la técnica ANOVA. A continuación se muestran el debido desarrollo:
+\begin{center}
+$Variabilidad\quad total = (varianza\quad entre\quad niveles) + (varianza\quad dentro \quad de\quad los\quad niveles) = \hat{S}_{t}^{2} + \hat{S}_{E}^{2} = \hat{S}_{T}^{2}$
+\end{center}
+
+Siendo:
+\begin{itemize}
+	\item $\hat{S}_{t}^{2}$ (Cuadrados Medios del Factor): calcula la varianza entre las medias de los distintos niveles (Intervarianza). Divide la suma de cuadrados del factor (SST) entre los grados de libertad.
+	\begin{center}
+		$\hat{S}_{t}^{2} = \frac{SST}{k-1}$
+	\end{center}
+	\item $\hat{S}_{E}^{2}$ (Cuadrados Medios del Error): calcula la varianza dentro de los niveles (Intravarianza). Divide la suma de cuadrados residual/error (SSE) entre los grados de libertad.
+	\begin{center}
+		$\hat{S}_{E}^{2} = \frac{SSE}{N-k}$
+	\end{center}
+	\item $\hat{S}_{T}^{2}$ (Cuadrados Medios Totales): calcula la varianza muestral total (Cuasivarianza total). Divide la Suma de Cuadrados Total (TSS) entre los grados de libertad.
+	\begin{center}
+		$\hat{S}_{T}^{2} = \frac{TSS}{N-1}$
+	\end{center}
+	
+	
+	Sabiendo esto, el ratio de la prueba nos queda de la siguiente forma:
+	\begin{center}
+	$F_{ratio}=\frac{Cuadrados\quad Medios\quad del\quad Factor}{Cuadrados\quad Medios\quad del\quad Error}=\frac{\hat{S}_{t}^{2}}{\hat{S}_{E}^{2}}=\frac{intervarianza}{intravarianza}$
+	\end{center}
+\end{itemize}
+
+
+
+
+\subsubsection{Análisis doble de la varianza}
+Cuando interviene más de un factor se utiliza el 'Two-Way ANOVA'. Con este método se mide la influencia de cada uno de ellos y de sus distintos niveles sobre el elemento a medir. Para poder rechazar la hipótesis nula, que en este caso afirma que la variable dependiente no depende de la independiente, es necesario contrastarla con cada factor.\\	
+
+
+En función de si el modelo tiene o no interacción, es decir, de si influye el efecto que tienen los distintos factores entre ellos, la variación total de los datos se medirá de forma distinta:
+
+\begin{itemize}
+	\item Con interacción:\\
+	(Variación total en los datos) = (Variación debida al primer factor) + (Variación debida al
+	segundo factor) + (Variación debida a la interacción entre factores) + (Variación debida al
+	error aleatorio) 
+	\item Sin interacción:\\
+	(Variación total en los datos) = (Variación debida al primer factor) + (Variación debida al
+	segundo factor) + (Variación debida al error aleatorio) 
+\end{itemize}
+
+\section{Chi-cuadrado}
+Esta prueba de hipótesis se utiliza para saber si las diferencias de un factor cualitativo, como el género o los años de estudio, entre distintos grupos son significativas. También sirve para identificar si dos de ellos están o no relacionados, o por el contrario, si son independientes.\\
+
+Para ello, se compara la frecuencia observada con la esperada en la muestra y se concluye si la desviación es significativa.\\
+
+El método Chi-cuadrado tiene las siguientes aplicaciones:
+\begin{itemize}
+	\item Prueba de independencia: estudia la relación entre dos variables categóricas.
+	\item Prueba de distribución: mide la desviación de los valores observados con respecto a los esperados.
+	\item Prueba de homogeneidad: observa la diferencia del valor de ciertas variables entre distintos grupos.
+\end{itemize}
+
+Para calcular el valor de Chi-cuadrado de una muestra, se hace el sumatorio del cuadrado de las frecuencias observadas (\textbf{O$_{k}$}) menos las esperadas (\textbf{E$_{k}$}), entre la frecuencia esperada \cite{saldana2011prueba}.
+\begin{center}
+	$\mathcal{X}^{2} = \sum_{k=1}^{n}\frac{(O_{k}-E_{k})^{2}}{E_{k}}$
+\end{center}
+
+\chapter{Clasificación de Bayes-KDE}
+ 
+\section{Introducción a la Clasificación Bayesiana}
+
+La clasificación supervisada es una técnica esencial en el análisis de datos y el reconocimiento de patrones. Consiste en construir un clasificador que pueda asignar una etiqueta a un conjunto de datos basado en ejemplos previos. Uno de los métodos más conocidos para esta tarea es la clasificación Bayesiana, que utiliza probabilidades para tomar decisiones. \cite{Bayesian22:online}
+
+\subsection{Redes Bayesianas y Estimación de Densidad de Núcleo (KDE)}
+
+Las redes Bayesianas son paradigmas que representan cómo diferentes variables están relacionadas entre sí utilizando probabilidades. Sin embargo, para manejar datos continuos (como altura, peso, etc.), estos modelos a menudo simplifican los datos dividiéndolos en categorías (discretización) o asumiendo que siguen una forma específica (como una distribución normal).\\
+
+La estimación de densidad de núcleo (KDE, por sus siglas en inglés) es una técnica que no hace estas suposiciones. KDE estima la distribución real de los datos continuos de una manera más flexible, permitiendo capturar patrones complejos sin necesidad de simplificaciones fuertes.\\
+
+La densidad estimada mediante el KDE depende del ancho de banda definido. Para su cálculo, se desarrollaron diversos métodos, basados en minimizar el error cuadrático medio integrado (MISE):
+\begin{center}
+	$\text{MISE}(\hat{f}) = \mathbb{E} \left[ \int (\hat{f}(x) - f(x))^2 \, dx \right]$
+\end{center}
+Debido a los problemas causados por el término de sesgo dependiente de \(f''(x)^2 \, dx\), se investigaron diferentes soluciones que le asignan un valor: la regla de referencia normal, Sheather-Jones, validación cruzada o la validación cruzada sesgada. En función de la aplicación se obtendrán mejores resultados con soluciones distintas. \cite{Kernelde33:online}
+
+\subsection{Clasificador Bayesiano basado en KDE en el contexto del TFG}
+Para el contexto de este trabajo, el clasificador Bayesiano basado en KDE se utilizó para analizar y comparar las medidas de pacientes con Parkinson en diferentes estados de la enfermedad. El objetivo era clasificar a los pacientes en dos grupos:
+\begin{itemize}
+	\item Pacientes Cognitivamente Normales (CN)
+	\item Pacientes con Deterioro Cognitivo Leve (MCI)
+\end{itemize}
+
+Esta clasificación se basó en el valor del "DPS" (Disease Progression Score) de cada paciente calculado previamente, y que indica el estado del sujeto en cada visita. El uso de KDE permitió una evaluación más precisa y flexible de cómo se distribuyen estas medidas en los pacientes, ayudando a distinguir entre los dos grupos con mayor exactitud.\\
+
+\section{Explicación detallada del funcionamiento de Bayes KDE}
+
+El clasificador Bayesiano basado en KDE funciona de la siguiente manera:
+
+\begin{enumerate}
+	\item Estimación de Densidad de Núcleo (KDE):
+	
+	La KDE es una técnica no paramétrica que estima la función de densidad de probabilidad de una variable aleatoria. En lugar de asumir que los datos siguen una distribución específica, KDE utiliza una suma de "núcleos" (funciones suaves y simétricas) centrados en cada punto de datos.
+	La forma más común del núcleo es la función gaussiana. El ancho del núcleo se controla mediante un parámetro de suavizado conocido como ancho de banda (bandwidth). Un ancho de banda pequeño produce una estimación de densidad muy detallada (pero con ruido), mientras que un ancho de banda grande produce una estimación más suave y general.
+	
+	\item Entrenamiento del Clasificador:
+	\begin{itemize}
+		\item Separación de los Datos por Clase: Los datos de entrenamiento se dividen en dos grupos según la clase: Pacientes Cognitivamente Normales (CN) y Pacientes con Deterioro Cognitivo Leve (MCI).
+		\item Estimación de Densidad de Núcleo: Se utiliza KDE para estimar la distribución de los valores de DPS para cada clase. Esto se hace ajustando una KDE a los datos de DPS de cada clase, obteniendo dos funciones de densidad de probabilidad diferentes: una para CN y otra para MCI.
+		\item Cálculo de Probabilidades a Priori: Se calculan las probabilidades iniciales (a priori) de cada clase basadas en la proporción de cada clase en los datos de entrenamiento. Por ejemplo, si el 60\% de los pacientes en el conjunto de entrenamiento son CN y el 40\% son MCI, las probabilidades a priori serán 0.6 para CN y 0.4 para MCI.
+	\end{itemize}
+	
+	
+	\item Predicción:
+	\begin{itemize}
+		\item Cálculo de Probabilidades Posteriores: Para cada nuevo valor de DPS que necesita ser clasificado, se calcula la probabilidad de pertenecer a cada clase utilizando las densidades estimadas por KDE. Esto se hace evaluando las funciones de densidad de probabilidad (obtenidas en el paso de entrenamiento) en el valor de DPS del nuevo dato.
+		\item Aplicación del Teorema de Bayes: Se aplica el teorema de Bayes para combinar las probabilidades a priori con las probabilidades obtenidas de KDE, obteniendo así las probabilidades posteriores. La probabilidad posterior para la clase $C_{i}$ dada un valor de DPS $x$ se calcula como:
+		
+		\begin{center}
+			$P(C_i \mid x) = \frac{P(x \mid C_i) \cdot P(C_i)}{P(x)}$
+		\end{center}
+		
+		donde $P(C_i \mid x)$ es la densidad estimada por KDE para la clase $C_i$, $P(C_i)$ es la probabilidad a priori de la clase $C_i$, y $P(x)$ es la probabilidad total del valor $x$ bajo todas las clases.
+		\item 	Asignación de Clase: El valor de DPS se asigna a la clase con la mayor probabilidad posterior. Es decir, se clasifica el valor de DPS en la clase para la cual la probabilidad posterior es mayor.
+	\end{itemize}
+	
+	\item Evaluación del Modelo:
+	\begin{itemize}
+		\item Sensibilidad, Especificidad y Exactitud: Se calculan métricas de evaluación como sensibilidad (capacidad de detectar verdaderos positivos), especificidad (capacidad de detectar verdaderos negativos) y exactitud general del modelo.
+		\item Reporte de Clasificación y AUC: Se genera un reporte detallado de la clasificación y se calcula el área bajo la curva (AUC) para evaluar el rendimiento del clasificador.
+	\end{itemize}
+	
+	
+\end{enumerate}
+
+
+
+

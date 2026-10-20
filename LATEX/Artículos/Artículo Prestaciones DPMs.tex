@@ -1,0 +1,83 @@
+\documentclass[12pt]{article}
+
+\begin {document}
+\section{Prestaciones de los DPMs}
+\subsection{Introducción}
+
+A la hora de comprender el progreso temporal de enfermedades como el Parkinson o el Alzheimer, se utilizan los modelos de progresión para identificar patrones y etapas y predecir como van a evolucionar los pacientes de la muestra tomada. Para ello, se realiza un estudio longitudinal de los sujetos tomando medidas de ciertos biomarcadores clínicos y neuropsicológicos durante varias visitas en distintos tiempos. Esto permite generar DPMS con conjuntos de variables distintas e identificar el grupo de biomarcadores que mejor predicen la evolución de la enfermedad y el estado clínico de individuos concretos y así poder desarrollar nuevas técnicas de diagnóstico y tratamiento. \\
+
+Para una correcta construcción de los modelos, se tienen en cuenta varios principios:
+\begin{itemize}
+	\item Optimización eficiente: los parámetros de los modelos se hayan iterando hasta alcanzar la convergencia de los mismo para conseguir una búsqueda efectiva. El proceso se repite varias veces hasta conseguir el grupo de parámetros más ajustado y mejorando su rendimiento.
+	\item Modelado robusto: la cohorte analizada puede tener particularidades ya que nos todos los pacientes tienen el mismo numero de visitas y pueden existir valores nulos en las mediciones de las variables. Además los biomarcadores pueden ser variables debido a factores como edad, género o salud. Por esto es necesario usar distintos métodos como la normalización.
+	\item Validación cruzada: evalúa el rendimiento de los modelos en diferentes conjuntos de datos.
+\end{itemize} 
+
+\section{Métodos}
+Para la construcción de los modelos de predicción de la enfermedad se llevan a cabo distintos pasos:
+
+\begin{description}
+	\item {\textbf{Paso 1. Preparación de los datos.}}\\
+	Tras escoger la cohorte de la cual se van a obtener los datos de un grupo de pacientes, hay que adaptar la información para poder trabajar con ella. Es necesario que la escala de las mediciones tomadas de cada biomarcador sea la misma, ya que los valores pueden ser muy variados y dificultaría la obtención de los parámetros de la trayectoria de progresión grupal de la enfermedad. Por lo que dichos valores se normalizan, con lo que se obtendrán observaciones de todos los parámetros entre 0 y 1. Esto se consigue en primer lugar, diferenciando entre variables \textbf{\underline{crecientes y decrecientes}}, las primeras indican el declive cognitivo al incrementar las mediciones tomadas y las segundas todo lo contrario, cuanto menor sean las medidas tomadas mayor declive presentará el paciente. Por lo que si queremos que en nuestra nueva escala se represente el declive con los valores más cercanos a uno es necesario invertir las variables decrecientes.\\
+	
+	-----------------------------PONER CODIGO NORM??-------------------------
+	
+	Además, en función del software con el que se trabaje puede ser neccesaria la eliminación de los valores Nan (\textit{Non available Number}). Estos son 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	- normalizacion
+	- valores nan leaspy
+	- estado cognitivo en cada visita paciente
+	- seleccion de variables
+	- seleccion rango vectores
+	- pool markers sets
+	- prerparar conjunto train-test, diagnostico, edades, labels
+	
+	\item {\textbf{Paso 2. Construccion del modelo (para cada conjunto de vars).}}\\
+	- Division train y valid
+	- COnstruir un modelo para cada boostrap con distintos pacientes de train
+	- Calibración de los modelos obteniendo los paramaetros del mismo y la trayectoria grupal media leaspy.fit (nombrar parametros)
+	- Personalizar para individuos tanto por una parte del grupo test como luego de train obteniendo los parametros individuales para cada modelo lo que luego nos permite 
+	- Reconstruir y predecir los valores de los biomarcadores para cada individio en un rango de tiempos escogido.
+	
+	\item {\textbf{Paso 3. Evaluacion de las trayectorias estimadas}}\\
+	- calculo de parametros como NMAE, MAe ... para comparar modelos.
+	
+	\item {\textbf{Paso 4. Clasificacion del estado clinico}}\\
+	- calculo del estado cognitivo de los sujetos con KDE, DPS y pronostico cognitivo de los sugetos con bayes
+	- Calculo AUC ... 
+	- SCORES
+	
+\end{description}
+
+
+
+\subsection{Prestaciones}
+\subsubsection{Parámetros de estimación de las trayectorias estimadas}
+\begin{description}
+	\item[MAE] descripción
+	\item [NMAE]
+\end{description}
+\subsubsection{Parámetros de clasificación del estado clínico}
+
+
+
+\begin{description}
+	\item[Etiqueta] descripción
+\end{description}
+
+
+
+
+
+
+
+
+\end{document}

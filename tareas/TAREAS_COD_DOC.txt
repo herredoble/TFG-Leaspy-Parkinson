@@ -1,0 +1,30 @@
+CODIGO
+
+1.Hacer SCORES de MAE en las escalas originales
+
+2.Para los SCORES de diagnóstico ver getAUC_Leaspy_preAD_LACT.m junto con el AUC y los coeficientes de correlación con el tiempo de reserva cognitiva y de la edad.
+
+1.Implementación del diagnóstico del sujeto y su pronóstico utilizando Bayes. Ver teorema de Bayes. utilizar librería de Python para hacer un clasificador de Bayes para dos grupos con n variables.
+
+3.Obtener el AUC
+
+1.Obtener las medidas de NMAE y MAE de los marcadores del modelo para cada boostrap, junto con los SCORES{1,2,3].
+
+4.Aprender a utilizar supercomputación con Curie. Mirar la paralelización de las tareas (parfor) y uso de tmux. 
+2.Convertir tarea de paralelización de Matlab en Python (mandar ejemplo en Matlab de paralelización en Curie).
+5.Cómo paralelizar tareas en Python utilizando Curie. Utiliza tmux. Ver chuletario en Moodle.
+1.Ejecutar en Curie la construcción de modelos de Leaspy. Paralelizar utilizando el parfor de Matlab en Python.
+
+- Implementación de los algoritmos de medidas de la calidad de las prestaciones de los DPMs (NMAE, MAE, AUC, scores,…)
+
+
+
+
+_______________________________________
+DOCUMENTACION
+
+2.Documentar marco teórico de los clasificadores de Bayes.
+
+2.Documentar la métrica de AUC.
+
+1.Documentación de las prestaciones de los DPMs (funcionamiento y su evaluación). Te paso mis apuntes. Documentación de capítulos 1de la tesis de Koval.

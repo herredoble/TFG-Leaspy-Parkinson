@@ -1,0 +1,242 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{lscape}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{adjustbox}
+\usepackage{algorithm} 
+\usepackage{algorithmic} 
+\usepackage{hyperref} 
+
+\begin {document}
+\section{Estudio sobre la influencia de marcadores en el declive cognitivo en la Enfermedad del Parkinson}
+
+\subsection{Introducción}
+La enfermedad del Parkinson es una afección neurodegenerativa que afecta a un gran numero de personas en todo el mundo. Por ello, unos de los desafíos clave es el desarrollo de métodos de predicción basados en el declive cognitivo leve en etapas tempranas, ya que permitiría avanzar en la detección de la enfermedad. Para lograr esto, este estudio se centra en la búsqueda de marcadores significativos en las primeras fases de la enfermedad.\\
+
+En primer lugar, se comparan los valores al inicio del estudio de las distintas variables, entre el grupo de pacientes a los que se les ha diagnosticado Parkinson (PD) con el grupo de control formado por pacientes sanos (HC). Esto se consigue calculando el post-hoc de cada variable, ya que indicará que variables son o no determinantes.\\
+
+En la segunda tabla, se dividen los pacientes PD en función de como avancen durante el transcurso de la enfermedad, separándose en: cognitivammente normales (PD\_CU), pacientes con deterioro cognitivo medio (PD\_MCI) y pacientes que desarrollaron demencia (PDD). Con esto se pretenden encontrar los indicadores del avance de la enfermedad a estos grupos.
+
+
+\subsection{Métodos}
+Para realizar ambas tablas y los estudios estadísticos se llevo a cabo un algoritmo de análisis de datos en Python ubicado en la siguiente dirección:
+\begin{center}
+	\texttt{/Users/rroca/TFG/Demos/rroca\_python/Tabla1\_python/tabla1.py}
+\end{center} 
+Su diseño se baso en la interpretación y procesamiento de los datos de pacientes con Enfermedad de Parkinson y de un grupo de control,  recopilados dentro de la cohorte de PPMI (Parkinson's Progression Markers Initiative). Entre las funciones clave dentro del código se incluyeron:
+
+\begin{description}
+	
+	\item {\textbf{Función de Chi-Cuadrado}} 
+	
+	Utilizada para evaluar la relación entre las variables categóricas y la presencia o ausencia de declive cognitivo. Estas variables representan grupos o categorías, como el género ("Female") y el APOE4. Con este proceso se averiguó cuales de ellas estaban significativamente asociadas con el deterioro cognitivo.\\
+\begin{algorithm}
+	\caption{chi\_square\_with\_posthoc}
+	\begin{algorithmic}[1]
+		\REQUIRE $group1, group2, group3, contingency\_table, i, v$
+		\ENSURE $post\_hoc$ (String) y modificación de $data\_nm["p-value"][i+1]$
+		\STATE $chi2, p\_value, dof, expected \leftarrow chi2\_contingency(contingency\_table)$
+		\STATE \textbf{print} $p\_value$
+		\IF{$p\_value < 0.01$}
+		\STATE $data \leftarrow np.concatenate([group1, group2, group3])$
+		\STATE $labels \leftarrow ['group1'] * len(group1) + ['group2'] * len(group2) + ['group3'] * len(group3)$
+		\STATE $tukey\_results \leftarrow pairwise\_tukeyhsd(data, labels, 0.01)$
+		\STATE $possible\_results \leftarrow ['a', 'b', 'c']$
+		\STATE $post\_hoc \leftarrow []$
+		\FOR{$res, reject$ \textbf{in} \textbf{zip}($possible\_results, tukey\_results.reject$)}
+		\IF{$reject$ \textbf{is} \textbf{True}}
+		\STATE $post\_hoc$.append($res$)
+		\ENDIF
+		\ENDFOR
+		\STATE $post\_hoc \leftarrow$ \textbf{join}($post\_hoc, ','$)
+		\IF{$p < 0.001$}
+		\STATE $data\_nm["p-value"][i+1] \leftarrow "< 0.001$"
+		\ELSE
+		\STATE $data\_nm["p-value"][i+1] \leftarrow p\_value$
+		\ENDIF
+		\ELSE
+		\STATE $data\_nm["p-value"][i+1] \leftarrow p\_value$
+		\ENDIF
+		\RETURN $post\_hoc$
+	\end{algorithmic}
+\end{algorithm}
+
+	En el código anterior, correspondiente al calculo del p-valor y del Post-Hoc mediante la prueba Chi-Cuadrado, se ve como la funcion toma como entrada los grupos a comparar, siendo grupo1 = PD y grupo2 = HC para la tabla 1; y grupo1 = PD\_CU, grupo2 = PD\_MCI y grupo3 = PDD para la tabla 2. Además se le pasa una tabla de contingencia, formada por los distintos valores de la variable en cada grupo.\\
+		
+	Cuando el p-valor esta por debajo de 0.01 (indicando relevancia estadística), realiza un análisis post-hoc para comparar diferencias entre grupos. En el caso de la tabla 2, cada letra se marcará las diferencias significativas entre un  par de grupo, siendo:
+	\begin{itemize}
+		\item a: PD\_CU a PD\_MCI.
+		\item b: PD\_CU a PDD.
+		\item c: PD\_MCI a PDD
+	\end{itemize}
+	
+	\item {\textbf{Funcion de Análisis de Varianza (ANOVA)}} 
+	
+	Se desarrolló para evaluar las diferencias en las variables numéricas entre los distintos grupos. Tiene un planteamiento similar al código de la función de Chi-cuadrado visto en el apratado anterior, salvo que en este caso no se realiza una tabla de contingencia para las distintas variables.\\
+\begin{algorithm}
+	\caption{one\_way\_anova\_with\_posthoc}
+	\begin{algorithmic}
+		\REQUIRE $group1, group2, group3, i, v$
+		\ENSURE $post\_hoc$ (String) y modificación de $data\_nm["p-value"][i+3]$
+		\STATE $f\_value, p\_value \leftarrow f\_oneway(group1, group2, group3)$
+		\STATE \textbf{print} $p\_value$
+		\IF{$p\_value < 0.01$}
+		\STATE $data \leftarrow np.concatenate([group1, group2, group3])$
+		\STATE $labels \leftarrow ['group1'] * len(group1) + ['group2'] * len(group2) + ['group3'] * len(group3)$
+		\STATE $tukey\_results \leftarrow pairwise\_tukeyhsd(data, labels, 0.01)$
+		\STATE $possible\_results \leftarrow ['a', 'b', 'c']$
+		\STATE $post\_hoc \leftarrow []$
+		\FOR{$res, reject$ \textbf{in} \textbf{zip}($possible\_results, tukey\_results.reject$)}
+		\IF{$reject$ \textbf{is} \textbf{True}}
+		\STATE $post\_hoc$.append($res$)
+		\ENDIF
+		\ENDFOR
+		\STATE $post\_hoc \leftarrow$ \textbf{join}($post\_hoc, ','$)
+		\IF{$p\_value < 0.001$}
+		\STATE $data\_nm["p-value"][i+3] \leftarrow "< 0.001$"
+		\ELSE
+		\STATE $data\_nm["p-value"][i+3] \leftarrow p\_value$
+		\ENDIF
+		\ELSE
+		\STATE $data\_nm["p-value"][i+3] \leftarrow p\_value$
+		\ENDIF
+		\RETURN $post\_hoc$
+	\end{algorithmic}
+\end{algorithm}
+
+	\item {\textbf{Análisis estadístico detallado}} 
+	
+	Mediante el algoritmo construido, se realizó un análisis detallado de las variables, incluyendo el cálculo de porcentajes y otros valores estadísticos como la media y la desviación. Esto se consiguió con funciones correspondientes a las librerías de pandas y numpy, como Datafra-
+	me.mean() o Dataframe.std(), facilitando la realización de una comparación rigurosa de los datos. \\
+	
+	Además, un paso muy importante es deshacerse de los valores nan dentro de las variables, ya que derivan en errores y fallos en el algoritmo. Esto ocurre sobre todo al dividir a los pacientes PD en los tres grupos en función del valor de las variables 'cogstate', 'MCI\_testscore' y 'NP1COG' a lo largo del estudio. Por ello, se realizan una serie de funciones encargadas de deshacerse de los valores nan en estas columnas.\\	
+	
+	\item {\textbf{Visualización de resultados}} 
+	
+	Por último, también se incluyeron funciones de visualización que permitieron presentar los resultados de manera clara y efectiva, lo que ayudó en la interpretación de los hallazgos. En esta parte, también se realizaron las tablas en formato Latex para facilitar su inclusión en este informe.
+	
+
+\end{description}
+
+
+\subsection{Resultados}
+Como resultado de la realización del algoritmo anterior, se obtuvieron las dos tablas siguientes, con las que se realizará un estudió de las variables:
+
+\begin{description}
+	\item{\textbf{Tabla 1:}} comparativa entre pacientes PD y el grupo de control en la linea de base.
+	
+	En la tabla \ref{tab:tabla1}, se observa como para cada grupo se muestra, en el caso de las variables cualitativas, el valor medio de sujetos y mujeres y su porcentaje en comparación con el total; y en el caso de las características cuantitativa, la media, la desviación típica y los máximos y mínimos. Además, se marca con una \textit{a} en la columna 'post-hoc' cuales de ellas son indicativas del declive cognitivo al inicio del estudio.
+	
+	
+	\begin{table}[t]
+		\begin{adjustbox}{width=\textwidth}
+			\begin{tabular}{|l||c|c|c|}
+				\toprule
+				Group &                                 PD &                                 HC & Post-hoc \\
+				\midrule
+				Subjects &                        423 (61.9\%) &                        196 (28.7\%) &    -      \\
+				Female &                        146 (34.5\%) &                         70 (35.7\%) &  -    \\
+				APOE4 &                  101 (26.3\%) n=384 &                   47 (26.4\%) n=178 &   -   \\
+				Age &            61.7 (9.7) (33.5, 84.9) &           60.8 (11.2) (30.6, 83.7) &  -    \\
+				Education &         15.56 (2.97) (5.00, 26.00) &         16.04 (2.89) (8.00, 24.00) &   -   \\
+				\hline
+				GDS &          2.32 (2.44) (0.00, 14.00) &          1.29 (2.10) (0.00, 15.00) &        a \\
+				UPSIT &         22.35 (8.23) (1.00, 40.00) &        33.98 (4.86) (11.00, 40.00) &        a \\
+				REM &          4.12 (2.69) (0.00, 12.00) &          2.83 (2.26) (0.00, 11.00) &        a \\
+				UPDRS3 &         20.89 (8.85) (4.00, 51.00) &          1.21 (2.19) (0.00, 13.00) &        a \\
+				\hline
+				\multicolumn{4}{ |l| }{Cognitive outcomes} \\
+				\hline
+				MOCA &        27.13 (2.32) (17.00, 30.00) &        28.23 (1.11) (26.00, 30.00) &        a \\
+				LNS &         10.59 (2.66) (2.00, 20.00) &         10.87 (2.57) (2.00, 20.00) &   -   \\
+				SDMT &         41.18 (9.73) (7.00, 82.00) &       46.77 (10.53) (20.00, 83.00) &        a \\
+				JLO &         12.77 (2.13) (5.00, 15.00) &         13.12 (1.98) (4.00, 15.00) &  -    \\
+				INMEDIATE &         24.44 (4.98) (9.00, 36.00) &        26.05 (4.50) (15.00, 35.00) &        a \\
+				HVLTRDLY &          8.36 (2.52) (0.00, 12.00) &          9.29 (2.32) (2.00, 12.00) &        a \\
+				SFT &      48.67 (11.63) (20.00, 103.00) &       51.80 (11.20) (22.00, 80.00) &        a \\
+				ADL &       93.14 (5.89) (70.00, 100.00) &      100.00 (0.00) (100.00, 100.00) &  -    \\
+				SCOPA &          9.51 (6.18) (0.00, 39.00) &          5.83 (3.69) (0.00, 20.00) &        a \\
+				\hline
+				\multicolumn{4}{ |l| }{CSF and DAT imaging markers} \\
+				\hline
+				ABETA &  909.55 (410.73) (238.80, 3707.00) & 1019.37 (499.46) (239.10, 3297.00) &        a \\
+				ASYN & 1506.70 (666.59) (432.40, 5256.90) & 1695.19 (747.42) (488.60, 4683.10) &        a \\
+				TAU &     169.54 (56.80) (80.93, 467.00) &     191.64 (79.26) (81.96, 580.80) &        a \\
+				PTAU &         14.87 (5.25) (8.01, 40.13) &         17.52 (8.35) (8.08, 73.61) &        a \\
+				pTauAB &           0.02 (0.01) (0.01, 0.08) &           0.02 (0.02) (0.01, 0.18) &  -    \\
+				MEANPUT &           0.83 (0.30) (0.24, 2.17) &           2.15 (0.56) (0.64, 3.89) &        a \\
+				MEANCAU &           2.00 (0.56) (0.39, 3.71) &           2.98 (0.63) (1.32, 5.20) &        a \\
+				\bottomrule
+			\end{tabular}
+		\end{adjustbox}
+		\caption{Características clínicas y demográficas}
+		\label{tab:tabla1}
+	\end{table}
+
+	
+	
+	
+	\item{\textbf{Tabla 2:}} comparativa entre la evolución de los pacientes con Parkinson a los distintos grupos (PD\_CU, PD\_MCI y PDD).
+	 
+	 En la tabla \ref{tab:tabla2}, se realizan los mismos cálculos estadísticos de la tabla \ref{tab:tabla1}, ya que permiten visualizar la influencia de los distintos parámetros en la evolución de los tres grupos expuestos. Con las columnas 'p-value' y 'post-hoc' se reflejan las variables que son significativas para predecir el avance de la enfermedad a cada uno de los grupos y que permitirían pronosticar si el paciente puede desarrollar deterioro cognitivo medio o demencia en las primeras fases de la enfermedad.
+	 
+	\begin{table}[t]
+		\begin{adjustbox}{width=\textwidth}
+			\begin{tabular}{|l||c|c|c|c|c|}
+				\toprule
+				Group &                              PD\_CU &                             PD\_MCI &                        PDD &   p-value & Post-hoc \\ 
+				\midrule
+				Subjects &                        323 (47.3\%) &                         83 (12.2\%) &                          17 (2.5\%) &     -      &    -      \\
+				Female &                        120 (37.2\%) &                         20 (24.1\%) &                          6 (35.3\%) &     0.083 &  -    \\
+				APOE4 &                   78 (26.4\%) n=295 &                    18 (23.7\%) n=76 &                     5 (38.5\%) n=13 &     0.101 &  -    \\
+				Age &            60.1 (9.8) (33.5, 82.3) &            66.0 (7.4) (48.0, 84.9) &            69.4 (7.4) (54.8, 83.0) & $<$ 0.001 &      a,b \\
+				Education &         15.70 (2.87) (8.00, 26.00) &         14.99 (2.82) (8.00, 21.00) &         15.59 (4.91) (5.00, 21.00) &     0.150 &  -    \\
+				\hline
+				GDS &          2.17 (2.40) (0.00, 14.00) &          2.86 (2.61) (0.00, 13.00) &           2.71 (2.11) (0.00, 8.00) &     0.058 &   -   \\
+				UPSIT &         23.41 (7.87) (5.00, 39.00) &         19.54 (8.60) (1.00, 40.00) &         16.06 (7.39) (5.00, 31.00) & $<$ 0.001 &      a,b \\
+				REM &          3.82 (2.54) (0.00, 12.00) &          5.06 (2.90) (0.00, 12.00) &          5.24 (3.11) (0.00, 12.00) & $<$ 0.001 &        a \\
+				UPDRS3 &         20.51 (8.73) (5.00, 47.00) &         22.29 (9.40) (4.00, 51.00) &        21.29 (8.18) (10.00, 39.00) &     0.260 &  -    \\
+				\hline
+				\multicolumn{6}{|l|}{Cognitive outcomes} \\
+				\hline
+				MOCA &        27.33 (2.17) (19.00, 30.00) &        26.58 (2.70) (17.00, 30.00) &        25.94 (2.38) (21.00, 29.00) &     0.003 &    -      \\
+				LNS &         11.04 (2.50) (2.00, 20.00) &          9.29 (2.58) (4.00, 17.00) &          8.29 (2.78) (3.00, 13.00) & $<$ 0.001 &      a,b \\
+				SDMT &        42.94 (8.75) (17.00, 82.00) &        36.69 (10.18) (7.00, 58.00) &       29.82 (10.85) (15.00, 50.00) & $<$ 0.001 &      a,b \\
+				JLO &         12.98 (1.96) (5.00, 15.00) &         12.19 (2.44) (6.00, 15.00) &         11.53 (2.67) (6.00, 15.00) & $<$ 0.001 &        a \\
+				INMEDIATE &         25.26 (4.74) (9.00, 36.00) &        22.13 (4.90) (11.00, 34.00) &        20.24 (4.28) (14.00, 28.00) & $<$ 0.001 &      a,b \\
+				HVLTRDLY &          8.75 (2.35) (0.00, 12.00) &          7.13 (2.75) (0.00, 12.00) &          7.00 (2.12) (3.00, 11.00) & $<$ 0.001 &        a \\
+				SFT &      50.60 (11.54) (24.00, 103.00) &        43.48 (9.39) (20.00, 70.00) &        37.35 (9.37) (25.00, 54.00) & $<$ 0.001 &      a,b \\
+				ADL &       93.25 (6.02) (70.00, 100.00) &       93.01 (5.29) (80.00, 100.00) &       91.76 (6.11) (80.00, 100.00) &     0.583 &   -   \\
+				SCOPA &          8.74 (5.70) (0.00, 35.00) &         11.79 (6.96) (3.00, 39.00) &         13.06 (7.20) (4.00, 32.00) & $<$ 0.001 &        a \\
+				\hline
+				\multicolumn{6}{|l|}{CSF and DAT imaging markers} \\
+				\hline
+				ABETA &  942.40 (413.12) (315.90, 3707.00) &  844.08 (395.26) (238.80, 2572.00) &  592.27 (251.10) (308.80, 1300.00) &     0.001 &        b \\
+				ASYN & 1519.17 (680.58) (432.40, 5256.90) & 1470.97 (620.62) (472.00, 3443.70) & 1443.49 (642.42) (539.40, 2780.50) &     0.783 &  -    \\
+				TAU &     167.17 (54.61) (80.93, 467.00) &     172.53 (59.27) (83.93, 345.30) &     202.68 (78.07) (97.17, 327.40) &     0.053 &   -   \\
+				PTAU &         14.52 (4.99) (8.02, 40.13) &         15.51 (5.40) (8.36, 32.80) &         18.59 (7.68) (8.01, 30.84) &     0.007 &        b \\
+				pTauAB &   0.0161 (0.0071) (0.0063, 0.0673) &   0.0196 (0.0120) (0.0103, 0.0816) &   0.0337 (0.0169) (0.0138, 0.0698) & $<$ 0.001 &      b,c \\
+				MEANPUT &           0.85 (0.29) (0.24, 2.15) &           0.77 (0.32) (0.29, 2.17) &           0.66 (0.18) (0.31, 1.05) &     0.005 &    -      \\
+				MEANCAU &           2.07 (0.54) (0.39, 3.71) &           1.80 (0.54) (0.62, 3.27) &           1.59 (0.50) (0.74, 2.52) & $<$ 0.001 &      a,b \\ 
+				\bottomrule
+			\end{tabular}
+		\end{adjustbox}
+		\caption{Características clínicas y demográficas}
+		\label{tab:tabla2}
+	\end{table}
+	
+\end{description}
+
+\subsection{Discusiones}
+En los resultados obtenidos a través del algoritmo de análisis en Python se proporciona información crucial sobre la influencia de las variables estudiadas en el deterioro cognitivo en pacientes con Enfermedad de Parkinson.\\
+
+Observando las dos tablas resultantes, se puede llevar a algunas conclusiones sobre los distintos parámetros. En la tabla \ref{tab:tabla1}, tras la comparación de los valores en la linea de base, se observan diferencias relevantes en algunas filas entre el grupo de pacientes con Parkinson y el grupo de control. En primer lugar, cabe destacar que para que el estudio sea fiable, ambos grupos tiene las mismas características demográficas. La edad, a pesar de lo que se podría llegar a pensar ya que la media de edad de ambos grupos es bastante elevada, no es un indicador del avance hacia el deterioro. Sin embargo, entre los parámetros cognitivos y clínicos se encuentran varios marcadores con indicador de significancia en la columna del Post-hoc. Entre los que se pueden señalar están GDS, REM, MOCA, SDMT y MEANPUT. \\
+
+Por otra parte, en la tabla \ref{tab:tabla2} destaca la relación entre las distintas características de estudio y el desarrollo de diferentes niveles de declive cognitivo en los pacientes PD. Los valores de p-valor y los indicadores de post-hoc señalan que variables pueden tener un efecto significativo en el transcurso del deterioro cognitivo en los distintos subgrupos. Entre ellas, diferenciadas por tener un \textit{valor p} igual o por debajo de 0.001, se ve como por ejemplo el SDMT y el MEANCAU son considerables tanto en la comparación entre sujetos cognitivamente normales y con deterioro cognitivo como entre cognitivamente normales y los pacientes que desarrollaron demencia. Sin embargo, hay factores que solo muestran efectos significativos en una de las dos comparativas, marcados con un solo indicador (\textit{a} o \textit{b}). Entre estos últimos se encuentran REM, con diferencias importantes solo entre PD\_CU y PD\_MCI; o A$\beta_{42}$, con diferencia notable entre PD\_CU y PDD. En esta tabla, dentro de las variables demográficas, la edad es un indicador del avance de los pacientes hacia un deterioro cognitivo medio y de la aparición de la demencia. Además, se puede ver como las variables cognitivas tienen una gran importancia en el desarrollo del declive cognitivo, sobre todo indicando la evolución de PD\_CU a PD\_MCI. Aún así, los parámetro LNS, SDMT, INMEDIATE y SFT también marcan la evolución de los sujetos hacia el grupo con demencia. Entre las variables clínicas, ABETA y PATU señalan la evolución hacia el colectivo PDD, y MEANCAU es una característica significativa tanto de la aparición del deterioro cognitivo como de la demencia. \\
+
+En vistas generales, cabe destacar las variables que resultaron significativas en el análisis, tanto en la tabla \ref{tab:tabla1} como en la tabla \ref{tab:tabla2}. Entre estas, se encuentran: UPSIT, SDMT, INMEDIATE, SFT y MEANCAU. Todas ellas son medidas cognitivas y clínicas. Estos parámetros pueden tener implicaciones cruciales para el diagnostico anticipado y el desarrollo de estrategias para el tratamiento.\\
+
+En resumen, los resultados de este estudio destacan marcadores significativos en el declive cognitivo en la Enfermedad de Parkinson. Estos hallazgos tienen el potencial de mejorar la predicción temprana de la enfermedad y permitir intervenciones más efectivas. La identificación de estos marcadores puede conducir a un enfoque más personalizado en el tratamiento de pacientes con Parkinson, mejorando así su calidad de vida y ofreciendo esperanza a quienes se ven afectados por esta enfermedad. También es importante tener en cuenta que los resultados obtenidos pueden variar según la población y otros factores.
+
+
+\end{document}

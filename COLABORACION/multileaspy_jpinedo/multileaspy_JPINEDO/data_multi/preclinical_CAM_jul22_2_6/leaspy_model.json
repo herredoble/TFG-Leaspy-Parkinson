@@ -1,0 +1,44 @@
+{
+  "leaspy_version": "1.4.0",
+  "name": "logistic",
+  "features": [
+    "RAVLT_immediate",
+    "FAQ"
+  ],
+  "dimension": 2,
+  "source_dimension": 1,
+  "noise_model": "gaussian_diagonal",
+  "parameters": {
+    "g": [
+      -0.1739189177751541,
+      1.8766095638275146
+    ],
+    "v0": [
+      -5.00657320022583,
+      -3.3086206912994385
+    ],
+    "betas": [
+      [
+        -0.27131184935569763
+      ]
+    ],
+    "tau_mean": 77.26004028320312,
+    "tau_std": 17.318971633911133,
+    "xi_mean": 0.0,
+    "xi_std": 1.2868297100067139,
+    "sources_mean": 0.0,
+    "sources_std": 1.0,
+    "noise_std": [
+      0.13941530883312225,
+      0.2352188527584076
+    ],
+    "mixing_matrix": [
+      [
+        0.2711012065410614
+      ],
+      [
+        -0.01068851724267006
+      ]
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+20/04
+
+Hola Raquel, te adjunto una demo que he implementado un modelo predictivo “constante” en Matlab. Se basa en estimar en el futuro con el último valor que se tiene en el paciente. De forma muy intuitiva, el pronóstico del tiempo de mañana diría que es el de hoy. Te adjunto artículo. He implementado la figura 11 del paper para nuestro caso de estudio. Obviamente, la metodología implementada servirá para luego medir la calidad de pronóstico de Leaspy. Luego la tarea es implementar en Python esta seria de medidas (AUC, BCA, MAE) para los próximos tres años y aplicarlas tanto al modelo predictivo constante como a Leaspy.
+ 
+
+Para construir las medidas he impuesto la condición de diseño que al menos debe tener el doble de visitas que de años a predicir. Por ejemplo, si voy a pronosticar lo que va a pasar a 2 años, el paciente al menos tendrá 4 visitas, las 2 primeras para estimar las trayectorias y las otras visitas para evaluar el test.
+
+
+10/4
+
+1.Hacer SCORES de MAE en las escalas originales
+
+2.Para los SCORES de diagnóstico ver getAUC_Leaspy_preAD_LACT.m junto con el AUC y los coeficientes de correlación con el tiempo de reserva cognitiva y de la edad.
+
+20/3    
+
+1.Ejecutar en Curie la construcción de modelos de Leaspy. Paralelizar utilizando el parfor de Matlab en Python.
+
+2.Comparar resultados con RPDPM del modelo {1,2,5,9}. Ejecutar algoritmo en Curie.
+
+3.Implementación del diagnóstico del sujeto y su pronóstico utilizando Bayes. Ver teorema de Bayes. utilizar librería de Python para hacer un clasificador de Bayes para dos grupos con n variables.
+
+4.Documentar marco teórico de los clasificadores de Bayes.
+
+5.Parámetros del i-sujeto son {tau_i, alpha_i, w_ik}, los parámetros long-term son gamma_0={p_0,t_0,v_0}, gamma_0(t_0)=p_0, d/dt(gamma_0(t_0)) =v0.
+
+6.Implementación del diagnóstico del sujeto y su pronóstico utilizando Bayes. Ver teorema de Bayes. utilizar librería de Python para hacer un clasificador de Bayes para dos grupos con n variables.
+
+7.Documentar marco teórico de los clasificadores de Bayes.
+
+8.Obtener el AUC y documentar la métrica de AUC.
+
+9.Propuesta de título de TFG.

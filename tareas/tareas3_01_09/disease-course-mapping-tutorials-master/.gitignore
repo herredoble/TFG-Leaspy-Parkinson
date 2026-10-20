@@ -1,0 +1,10 @@
+.DS_Store
+.ipynb_checkpoints
+__pycache__
+._*
+logs/
+
+sources/**/*.ipynb
+!sources/**/data/**/*.ipynb
+
+sources/**/outputs/

@@ -1,0 +1,116 @@
+
+%parametros de tipo libro
+\documentclass[10pt,a4paper]{book}
+
+%idioma español y acentos
+\usepackage[spanish, es-tabla]{babel}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+
+%algunos sÌmbolos matem·ticos y paquete para usar subim·genes
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{listings}
+\usepackage{appendix}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{lscape}
+\usepackage{adjustbox}
+\usepackage{algorithm} 
+\usepackage{algorithmic} 
+%M·rgenes
+\usepackage[left=3cm,top=3cm,right=3cm,bottom=3cm]{geometry}
+
+%
+\usepackage{multicol}
+
+%para generar índice con hipervínculos
+\usepackage{hyperref}
+
+%parametros del documento (sus propiedades)
+\hypersetup{
+    pdftitle={Nombre del alumno - TFG - año},
+    pdfsubject={TFG - año},
+    pdfauthor={Nombre del alumno},
+    pdfkeywords={palabraclave1} {palabraclave2} {palabraclave3},
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black,
+}
+
+%empieza el documento
+\begin{document}  
+
+%elementos antes del trabajo en sÌ se meten dentro de frontmatter
+\frontmatter
+
+%cada incluye referencia a un archivo de tipo .tex
+\include{capitulos/portada}
+
+\include{capitulos/firmas}
+
+%Licencia opcional
+\include{capitulos/licencia}
+
+\include{capitulos/evaluacion}
+
+\include{capitulos/agradecimientos}
+
+\include{capitulos/resumen}
+
+%genera índice
+\tableofcontents
+\addcontentsline{toc}{chapter}{Índice}
+
+%Índice de figuras.
+\listoffigures
+
+%Índice de tablas.
+\listoftables
+
+%Empieza la parte descriptiva del trabajo
+\mainmatter
+
+\include{capitulos/introduccion}
+  
+%partes finales del trabajo: conclusiones, bibliografia y anexos
+  
+\include{capitulos/estadoarte}
+
+\include{capitulos/materiales}
+
+\include{capitulos/metodos}
+
+\include{capitulos/resultados}
+
+\include{capitulos/discusión}
+
+\include{capitulos/conclusion}
+
+\appendix
+
+\include{capitulos/apendice}
+
+\backmatter
+%Glosario, lista de símbolos, notas, etc.
+
+
+
+%genera doble hoja en blanco
+\cleardoublepage
+
+%apartado de bibliografía
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+%estilo de bibliografía: plana, alfa...
+\bibliographystyle{unsrt}
+%se incluye la bibliografía. Archivo de tipo .bib (bibtex)
+\bibliography{bibliografia/bibliografia}
+
+%fin del documento
+\end{document}

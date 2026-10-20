@@ -1,0 +1,25 @@
+# Archivos del sistema Windows 
+Thumbs.db 
+Desktop.ini 
+$RECYCLE.BIN/ 
+ 
+# Archivos compilados de LaTeX 
+*.aux 
+*.bbl 
+*.bcf 
+*.blg 
+*.fdb_latexmk 
+*.fls 
+*.lof 
+*.log 
+*.lot 
+*.out 
+*.run.xml 
+*.synctex.gz 
+*.toc 
+*.xdv 
+*.csv 
+*.pkl 
+*.pt 
+*.h5 
+Demos/ 

@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}
+
+\begin {document}
+\section{Clinical variables and biomarkers in prediction of cognitive impairment in patients with newly diagnosed Parkinson’s disease: a cohort study}
+
+
+\subsection{Introducción}
+
+La enfermedad del Parkinson provoca un deterioro cognitivo consistente en la disminución de capacidades como memoria, atención o razonamiento. En etapas mas avanzadas, aparece la demencia que incapacita a los pacientes en su vida diaria. El desarrollo de métodos de predicción basados en el declive cognitivo leve en etapas tempranas, permitiría avanzar en la detección de la enfermedad. \\
+
+
+La deficiencia en dopamina ha sido identificada como un indicador eficiente relacionado con el deterioro cognitivo. Además se han sugerido otros factores como la edad o el género. En este estudio se valora la inclusión de los niveles de líquido cefalorraquídeo (CSF-cerebrospinal fluid) e imágenes de transporte de dopamina (DAT) para predecir el declive cognitivo en un periodo de 2 años.
+
+\subsection{Métodos}
+En este estudio se trabajó con la información de pacientes de la Parkinson’s Progression Marker Initiative (PPMI), en el cual se hace una evaluación clínica de dos grupos. Por una parte, se encuentran los pacientes a los que se les ha detectado la enfermedad de Parkinson y, por otra, un grupo de control formado por individuos sanos. Con las personas seleccionadas se llevó a cabo un seguimiento de dos años (Julio, 2010 - May, 2013). El grupo de control se seleccionó en base a su similitud con el de los pacientes, para poder realizar un análisis comparativo entre ambos colectivos. Para ello se utilizó un método de exclusión con algunos requisitos como: trastornos neurológicos clínicamente significativos o tener algún familiar de primer grado con Parkinson.\\
+
+Los factores evaluados en este estudio fueron: 
+\begin{itemize}
+	\item Funciones motoras y no-motoras.
+	\item Examen del líquido cefalorraquídeo (CSF).
+	\item Imagen de emisión de fotón único con tomografía computarizada (SPECT) de ioflupano marcado con yodo-123 en DATSCAN.
+\end{itemize}
+
+Los cuales se analizaron a través de ciertas capacidades: memoria (HVLT-R), función visuoespacial (Benton Judgment of Line Orientation 15-item (split-half)), velocidad de proceso y atención, función ejecutiva y memoria de trabajo, y la fluencia. Se empleó cómo método de validación global de las citadas habilidades la escala MoCA (Montreal Cognitive Assesment). En función de los resultados de estas pruebas que se realizan durante un seguimiento de 2 años, los pacientes son clasificados en tres grupos:
+\begin{enumerate}
+	\item Cognición normal.
+	
+	No presenta ningún cambio en las habilidades cognitivas.
+	
+	\item Deterioro cognitivo medio.
+	
+	Aparecen ciertas puntuaciones en mínimo dos de los tests cognitivos  realizados, pero no llega a influir en las capacidades funcionales.
+	
+	\item Demencia.	
+	
+	Se detecta un deterioro funcional debido al decline cognitivo que afecta ala vida diaria del paciente.
+\end{enumerate}
+
+Además de las variables clínicas que se incluye en el estudio por estar relacionadas con el deterioro cognitivo(edad, género, años de educación, duración de la enfermedad, sentido del olfato, trastorno dela conducta del sueño por movimientos oculares rápidos(RBD), depresión, severidad de la enfermedad del Parkinson, ...), también se incluyen algunos biomarcadores ya nombrados anteriormente: 
+\begin{itemize}
+	\item Datos de imágenes DAT.
+	\item Estado del APOE$\epsilon$4.
+	\item Valoración del CSF (Líquido cefalorraquídeo).
+\end{itemize}
+
+En el proceso analítico de los datos seleccionados se identifican 5 pasos en su ejecución:
+
+\begin{description}
+	
+	\item {\textbf{Paso 1}} Recopilación y evaluación de datos.
+	
+	Se recogieron datos en dos momentos clave, en la linea de base, donde se realizo el cuestionario MoCA y se tomaron imagen de DAT; y a los dos años de seguimiento. La diferencia entre estas dos medidas se guardo como el cambio en el puntaje MoCA.
+	
+	\item {\textbf{Paso 2}} Búsqueda de datos faltantes.
+	
+	Se utilizaron técnicas de imputación y análisis de regresión.
+	
+	\item{\textbf{Paso 3}} Pruebas de comparación de grupos.
+	
+	En función de la naturaleza de las variable se realizaron: pruebas chi-cuadrado	para variables categóricas, pruebas t para variables con distribución normal y pruebas de Mann-Whitney para las no paramétricas.
+	
+	
+	\item {\textbf{Paso 4}} Análisis de regresión.
+	
+	En función del tipo de la variable de respuesta y del modelo se llevaron a cabo:
+	
+	\begin {enumerate}
+	\item Análisis de regresión lineal. (variable continua)
+	
+	Para observar el cambio en el puntaje MoCA en función de variables independientes, fueron tanto univariadas como multivariadas. 
+	
+	\item Análisis de regresión logística. (variable categórica o binaria)
+	
+	\begin{enumerate}
+		\item Univariada: Utilizada para hallar posibles factores de riesgo del deterioro cognitivo.
+		\item Multivariada: Aplicando criterios de inclusión, se desarrollaron varios modelos incluyendo variables clínicas, imágenes DAT y biomarcadores CSF.
+		\end {enumerate}			
+		\end {enumerate}
+		
+		\item {\textbf{Paso 5}} Validación del modelo de predicción.
+		
+		Una vez evaluada la precisión del modelo y su capacidad mediante el área bajo la curva ROC (Característica de Operación del Receptor) y el índice R2 de Nagelkerke, se obtuvo el siguiente método de predicción del riesgo del paciente:\\
+		
+		Riesgo de deterioro cognitivo a los 2 años = $\frac{exp(puntuacion.de.riesgo.del.paciente)}{1 + exp(puntuacion.de.riesgo.del.paciente)}$\\
+		
+		Siendo:\\
+		
+		Puntuación de riesgo del paciente = intercept +(b variable 1 ×
+		variable 1)+(b variable 2 × variable 2)+ (b variable 3 × 
+		variable 3)+(b variable 4 × variable 4)+ (b variable 5 ×
+		variable 5)
+		
+	\end{description}
+	
+	\subsection{Resultados }
+	
+	Del los 393 sujetos con Parkinson temprano de este estudio, 3 fueron excluidos por falta de información MoCA en la línea de base, 318 tenían resultados disponible cuando se descargó la información a los 2 años y a 314 se les evaluó el deterioro cognitivo. Además, cierta información de algunas variables se fue perdiendo a lo largo de la investigación, pero no llego a alterar los resultados finales. De los evaluados, al final del estudio a 49 de ellos se les diagnosticó deterioro cognitivo medio, 3 pacientes desarrollaron demencia y los otros 262 se mantuvieron como cognitivamente sanos. En el grupo de control formado por 178 sujetos, solamente 2 evolucionaron a deterioro cognitivo medio.\\
+	
+	En los análisis multivariados, el cambio en la puntuación Moca desde el principio del seguimiento a los dos años en el grupo que padece la enfermedad se debe a: edad, puntuación UPSIT (Test de Identificación del Olor de la Universidad de Pensilvania), 
+	estado APOE, y relación de A$\beta$42 a t-tau del CSF. Mientras que en el grupo saludable fue relacionado con: edad, género y CSF A$\beta$42.\\
+	
+	Los 52 participantes que fueron clasificados con deterioro cognitivo tenían las siguientes características al inicio en comparación con aquellos sin decline cognitivo:
+	\begin{itemize}
+		\item Mayor edad.
+		\item Mayor puntuación RBDSQ (Cuestionario de Detección de Trastorno del Comportamiento del Sueño REM).
+		\item Menor puntuación UPSIT.
+		\item Menor CSF A$\beta$ y relación A$\beta$42 a t-tau.
+		\item Menor captación media de caudado y
+		asimetría de caudado y putaminal
+	\end{itemize}	
+	
+	Tras realizar un análisis de regresión logística, combinando distintas variables en cada modelo y comparándolos con los resultados obtenidos para el caso de incluir solamente la edad, se llegó a un modelo final. En este se combinaron las variables relacionadas fuertemente con el deterioro cognitivo en análisis univariados (edad, puntuación UPSIT, puntuación RBDSQ, CSF A$\beta$42 y captación media del caudado). Este obtuvo un AUC (Área Bajo la Curva) de 0.80 y p = 0.0003. También se detecto una diferencia significante en el valor AUC entre el modelo final y los modelos usando la edad junto con variables clínicas o parámetros CSF. Mostrando el modelo final en una tabla en función de la edad y las distintas variables se llego a la conclusión de que se puede eliminar la captación del caudado sin influir en las puntuaciones de otras variables, ya que su relación con el deterioro cognitivo no es clara. Por otra parte, con la validación cruzada se confirmo que el modelo final es consistente con las diferentes muestras (p=0.88).\\
+	
+	\subsection{Conclusiones del estudio}
+	
+	En este estudio, siguiendo los objetivos marcados, se encontraron factores clínicos y señales biológicas que pueden predecir el decline cognitivo en los primeros dos años tras diagnosticarse el Parkinson. Este deterioro, relacionado fuertemente con la aparición de demencia en personas que padecen esta enfermedad, se asoció con varios aspectos clínicos independientemente del resultado obtenido a los dos años. Los resultados de la investigación muestran que la edad, los síntomas clínicos y ciertos biomarcadores pueden predecir la disminución cognitiva en etapas tempranas de la enfermedad. Gracias a las combinaciones de variables obtenidas en este estudio, podrían llevarse estos conocimientos a prácticas y ensayos clínicos para identificar personas en riesgo de deterioro cognitivo, aunque también serían necesarios estudios adicionales para confirmar estos resultados.
+\end{document}

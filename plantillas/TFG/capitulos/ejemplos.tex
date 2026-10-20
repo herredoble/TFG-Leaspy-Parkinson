@@ -1,0 +1,64 @@
+\chapter{Cómo escribir en Latex}
+
+\section{Citas}
+
+%las referencias a artículos se ponen con \cite, 
+%las referencias a imágenes \ref, 
+%y las referencias a ecuaciones \eqref
+
+Esto es un ejemplo de cita de un artículo \cite{Brunete:2013}.
+
+
+\section{Listas}
+
+%itemize es una lista. Cada término lleva delante un \item
+Ejemplo de lista de puntos:
+\begin{itemize}
+\item Ejemplo1.
+\item Ejemplo2.
+\end{itemize} 
+
+Y lista numerada:
+\begin{enumerate}
+\item Elemento 1
+\item Elemento 2
+\end{enumerate}
+
+\section{Tablas}
+
+Ejemplo de tabla. Como se aprecia en la tabla \ref{tab:table_example}...
+\begin{table}[tb]
+\caption{Ejemplo de tabla}
+\label{tab:table_example}
+\begin{center}
+\begin{tabular}{|c||c|c|}
+\hline
+One & Two & Three\\
+\hline
+F1A & F1B & F1C\\
+F2A & F2B & F2C\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Referencia a una sección}
+\label{sec:refsec}
+
+Ejemplo de referencia a la sección \ref{sec:refsec}
+
+\section{Texto}
+
+Testo en \textbf{negrita} y \textit{cursiva}.
+
+\section{Figuras}
+
+Ejemplo de referencia a figura (figura \ref{fig:logo_upm}). Es importante que todas las figuras que aparezcan estén referenciadas, así como las tablas. En general las figuras se colocarán al principio o al final de cada página ([tb] en latex), a no ser que por alguna necesidad se deban colocar en una posición exacta ([h]).
+
+%caption es el pie de foto, y label es el nombre que se da a la imagen para referenciarla después. label no puede llevar acentos y no se muestra de cara al documento final (es sólo interno).
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.45\textwidth]{figuras/Logo_UPM.jpg}   
+\caption{Logotipo de la UPM}
+\label{fig:logo_upm}
+\end{figure}

@@ -1,0 +1,178 @@
+
+%parametros de tipo libro
+\documentclass[10pt,a4paper]{book}
+
+%idioma español y acentos
+\usepackage[spanish, es-tabla]{babel}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+%algunos sÌmbolos matem·ticos y paquete para usar subim·genes
+\usepackage{pdfpages}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{listings}
+\usepackage{appendix}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{lscape}
+\usepackage{adjustbox}
+\usepackage{algorithm} 
+\usepackage{algorithmic} 
+\usepackage{listings}
+\usepackage{xcolor}  % Paquete para definir colores
+\usepackage[left=3cm,top=3cm,right=3cm,bottom=3cm]{geometry}
+
+
+
+
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % Limpia todas las cabeceras y pies de página
+
+% Aumenta el espacio de la cabecera
+\setlength{\headheight}{16pt} % Ajusta según sea necesario
+\setlength{\headsep}{25pt} % Ajusta según sea necesario
+
+
+% Configuración para las páginas impares (recto)
+\fancyhead[RO]{\MakeUppercase{\rightmark}} % Número de sección y nombre de sección en la cabecera derecha
+\fancyfoot[RO]{\thepage} % Número de página en el pie de página derecho
+
+% Configuración para las páginas pares (verso)
+\fancyhead[LE]{\MakeUppercase{\leftmark}} % Número de capítulo y nombre de capítulo en la cabecera izquierda
+\fancyfoot[LE]{\thepage} % Número de página en el pie de página izquierdo
+
+% Actualiza las marcas de capítulo y sección
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter\quad #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\quad #1}}
+
+
+
+
+
+
+%
+\usepackage{multicol}
+
+%para generar índice con hipervínculos
+\usepackage{hyperref}
+
+%parametros del documento (sus propiedades)
+\hypersetup{
+	pdftitle={Nombre del alumno - TFG - año},
+	pdfsubject={TFG - año},
+	pdfauthor={Nombre del alumno},
+	pdfkeywords={palabraclave1} {palabraclave2} {palabraclave3},
+	colorlinks,
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=black,
+}
+% Configuración de \lstset para un código más estético
+\lstset{
+	language=Python,    
+	basicstyle=\ttfamily\small,   
+	keywordstyle=\color{blue}\bfseries,    
+	commentstyle=\color{teal}\itshape,    
+	stringstyle=\color{brown},          
+	numberstyle=\tiny\color{gray},        
+	numbers=left,                         
+	stepnumber=1,                          
+	numbersep=10pt,                        
+	backgroundcolor=\color{lightgray!20},  
+	showspaces=false,                       
+	showstringspaces=false,                
+	showtabs=false,                        
+	frame=single,                           
+	rulecolor=\color{black},                
+	captionpos=b,                          
+	breaklines=true,                      
+	breakatwhitespace=true,               
+	tabsize=4,                            
+	escapeinside={\%*}{*)},               
+	morekeywords={self},                  
+	xleftmargin=15pt,                     
+	xrightmargin=15pt                   
+}
+
+
+%M·rgenes
+
+
+%empieza el documento
+\begin{document}  
+
+%elementos antes del trabajo en sÌ se meten dentro de frontmatter
+\frontmatter
+
+%cada incluye referencia a un archivo de tipo .tex
+\include{capitulos/portada}
+
+\include{capitulos/firmas}
+
+%Licencia opcional
+\include{capitulos/licencia}
+
+\include{capitulos/evaluacion}
+
+\include{capitulos/agradecimientos}
+
+\include{capitulos/resumen}
+
+%genera índice
+\tableofcontents
+\addcontentsline{toc}{chapter}{Índice}
+
+%Índice de figuras.
+\listoffigures
+
+%Índice de tablas.
+\listoftables
+
+%Empieza la parte descriptiva del trabajo
+\mainmatter
+
+\include{capitulos/introduccion}
+  
+%partes finales del trabajo: conclusiones, bibliografia y anexos
+  
+\include{capitulos/estadoarte}
+
+\include{capitulos/materiales}
+
+\include{capitulos/metodos}
+
+\include{capitulos/resultados}
+
+\include{capitulos/discusión}
+
+\include{capitulos/conclusion}
+
+\appendix
+
+\include{capitulos/apendice}
+
+\backmatter
+%Glosario, lista de símbolos, notas, etc.
+
+
+
+%genera doble hoja en blanco
+\cleardoublepage
+
+%apartado de bibliografía
+\addcontentsline{toc}{chapter}{Bibliografía}
+
+%estilo de bibliografía: plana, alfa...
+\bibliographystyle{unsrt}
+%se incluye la bibliografía. Archivo de tipo .bib (bibtex)
+\bibliography{bibliografia/bibliografia}
+
+%fin del documento
+\end{document}

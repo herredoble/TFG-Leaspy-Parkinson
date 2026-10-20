@@ -1,0 +1,44 @@
+{
+  "leaspy_version": "1.4.0",
+  "name": "logistic",
+  "features": [
+    "MMSE",
+    "mPACCtrailsB"
+  ],
+  "dimension": 2,
+  "source_dimension": 1,
+  "noise_model": "gaussian_diagonal",
+  "parameters": {
+    "g": [
+      0.5553556084632874,
+      0.5596650838851929
+    ],
+    "v0": [
+      -4.2482099533081055,
+      -4.177165508270264
+    ],
+    "betas": [
+      [
+        0.07994719594717026
+      ]
+    ],
+    "tau_mean": 66.42615509033203,
+    "tau_std": 17.85181999206543,
+    "xi_mean": 0.0,
+    "xi_std": 0.8026057481765747,
+    "sources_mean": 0.0,
+    "sources_std": 1.0,
+    "noise_std": [
+      0.2896045744419098,
+      0.13738787174224854
+    ],
+    "mixing_matrix": [
+      [
+        -0.05856522172689438
+      ],
+      [
+        0.05442121997475624
+      ]
+    ]
+  }
+}

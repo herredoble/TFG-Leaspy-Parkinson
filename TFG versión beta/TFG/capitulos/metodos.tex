@@ -1,0 +1,982 @@
+\chapter{Métodos}
+
+\section{Introducción}
+En esta sección se explicarán los distintos procesos llevados a cabo en el estudio y predicción de la enfermedad de Parkinson en los distintos pacientes de la cohorte obtenida de la iniciativa de PPMI.\\
+
+Para poder trabajar con ella, primero se realizaron una serie de adaptaciones para obtener un formato concreto.
+
+
+\section{Estudio transversal sobre la influencia de marcadores en el declive cognitivo en la Enfermedad de Parkinson}
+
+La enfermedad de Parkinson es una afección neurodegenerativa que afecta a un gran numero de personas en todo el mundo. Por ello, unos de los desafíos clave es el desarrollo de métodos de predicción basados en el declive cognitivo leve en etapas tempranas, ya que permitiría avanzar en la detección de la enfermedad. Para lograr esto, este estudio se centra en la búsqueda de marcadores significativos en las primeras fases de la enfermedad.\\
+
+En primer lugar, se comparan los valores al inicio del estudio de las distintas variables, entre el grupo de pacientes a los que se les ha diagnosticado Parkinson (PD) con el grupo de control formado por pacientes sanos (HC). Esto se consigue calculando el post-hoc de cada variable, ya que indicará que variables son o no determinantes.\\
+
+En la segunda tabla, se dividen los pacientes PD en función de como avancen durante el transcurso de la enfermedad, separándose en: cognitivammente normales (PD\_CU), pacientes con deterioro cognitivo medio (PD\_MCI) y pacientes que desarrollaron demencia (PDD), como se puede ver en la tabla \ref{tab:tabla4}. Con esto se pretenden encontrar los indicadores del avance de la enfermedad a estos grupos.\\
+
+\begin{table}[t]
+	\centering
+	\begin{tabular}{|c||c|c|} 
+		\hline
+		\multicolumn{3}{|c|}{Clasificación general} \\
+		\hline
+		- &  Nº Pacientes &  Porcentaje\\ 
+		\hline
+		TOTAL &  683 & 100\% \\
+		\hline
+		PD & 423 &  61,9\%  \\
+		\hline
+		HC & 196  &  28,7\%  \\
+		\hline
+		\multicolumn{3}{|c|}{Subclasificacion grupo PD} \\
+		\hline
+		- &  Nº Pacientes &  Porcentaje\\
+		\hline
+		PD-CU &  323 &  47,3\%  \\
+		\hline
+		PD-MCI &   83 &   12,2\% \\
+		\hline
+		PDD &  17 &  2,5\%  \\ 
+		\bottomrule
+	\end{tabular}
+	\caption{División del grupo de pacientes en función del estado de la enfermedad}
+	\label{tab:tabla4}
+\end{table}
+
+
+Para realizar ambas tablas y los estudios estadísticos se llevaron a cabo algoritmos de análisis de datos en Python ubicados en las siguientes direcciones:
+\begin{center}
+	\texttt{Demos/rroca\_python/Tabla1\_python/tabla1.py}\\
+		
+	\texttt{Demos/rroca\_python/Tabla1\_div\_PD/tabla1\_div\_PD\_int2.py}
+\end{center} 
+
+En el primer directorio se ubica el programa encargado de generar la tabla de comparación de las características clínicas y demográficas de los pacientes de control y con enfermedad de Parkinson. En el segundo directorio, se genera la tabla que compara el avance de los pacientes con Parkinson a los distintos grupos clínicos al inicio del estudio.\\
+
+Su diseño se baso en la interpretación y procesamiento de los datos de pacientes con Enfermedad de Parkinson y de un grupo de control,  recopilados dentro de la cohorte de PPMI (Parkinson's Progression Markers Initiative). Entre las funciones clave dentro del código se incluyeron:
+
+\begin{description}
+	
+	\item {\textbf{Función de Chi-Cuadrado}} 
+	
+	Utilizada para evaluar la relación entre las variables categóricas como se ve en la tabla \ref{tab:tabla5} y la presencia o ausencia de declive cognitivo. Estas variables representan grupos o categorías, como el género ("Female") y el APOE4. Con este proceso se averiguó cuales de ellas estaban significativamente asociadas con el deterioro cognitivo.\\
+	
+	\begin{table}[t]
+		\centering
+		\begin{tabular}{|c|c|c|} 
+			\toprule
+			Variable dependiente (y) & \multicolumn{2}{|c|}{Variable independiente (x)} \\
+			\hline
+			- &  Continua &  Categórica\\ 
+			\hline
+			Continua &  Regresión & ANOVA \\
+			\hline
+			Categórica & Regresión logística &  Test Chi-Cuadrado  \\
+			\bottomrule
+		\end{tabular}
+		\caption{Técnicas estadísticas de análisis de distintos tipos de variables}
+		\label{tab:tabla5}
+	\end{table}
+	
+	\begin{algorithm}
+		\caption{chi\_square\_with\_posthoc}
+		\begin{algorithmic}[1]
+			\REQUIRE $group1, group2, group3, contingency\_table, i, v$
+			\ENSURE $post\_hoc$ (String) y modificación de $data\_nm["p-value"][i+1]$
+			\STATE $chi2, p\_value, dof, expected \leftarrow chi2\_contingency(contingency\_table)$
+			\STATE \textbf{print} $p\_value$
+			\IF{$p\_value < 0.01$}
+			\STATE $data \leftarrow np.concatenate([group1, group2, group3])$
+			\STATE $labels \leftarrow ['group1'] * len(group1) + ['group2'] * len(group2) + ['group3'] * len(group3)$
+			\STATE $tukey\_results \leftarrow pairwise\_tukeyhsd(data, labels, 0.01)$
+			\STATE $possible\_results \leftarrow ['a', 'b', 'c']$
+			\STATE $post\_hoc \leftarrow []$
+			\FOR{$res, reject$ \textbf{in} \textbf{zip}($possible\_results, tukey\_results.reject$)}
+			\IF{$reject$ \textbf{is} \textbf{True}}
+			\STATE $post\_hoc$.append($res$)
+			\ENDIF
+			\ENDFOR
+			\STATE $post\_hoc \leftarrow$ \textbf{join}($post\_hoc, ','$)
+			\IF{$p < 0.001$}
+			\STATE $data\_nm["p-value"][i+1] \leftarrow "< 0.001$"
+			\ELSE
+			\STATE $data\_nm["p-value"][i+1] \leftarrow p\_value$
+			\ENDIF
+			\ELSE
+			\STATE $data\_nm["p-value"][i+1] \leftarrow p\_value$
+			\ENDIF
+			\RETURN $post\_hoc$
+		\end{algorithmic}
+	\end{algorithm}
+	
+	En el código anterior, correspondiente al calculo del p-valor y del Post-Hoc mediante la prueba Chi-Cuadrado, se ve como la funcion toma como entrada los grupos a comparar, siendo grupo1 = PD y grupo2 = HC para la tabla 1; y grupo1 = PD\_CU, grupo2 = PD\_MCI y grupo3 = PDD para la tabla 2. Además se le pasa una tabla de contingencia, formada por los distintos valores de la variable en cada grupo.\\
+	
+	Cuando el p-valor esta por debajo de 0.01 (indicando relevancia estadística), realiza un análisis post-hoc para comparar diferencias entre grupos. En el caso de la tabla 2, cada letra se marcará las diferencias significativas entre un  par de grupo, siendo:
+	\begin{itemize}
+		\item a: PD\_CU a PD\_MCI.
+		\item b: PD\_CU a PDD.
+		\item c: PD\_MCI a PDD
+	\end{itemize}
+	
+	\item {\textbf{Funcion de Análisis de Varianza (ANOVA)}} 
+	
+	Se desarrolló para evaluar las diferencias en las variables numéricas entre los distintos grupos. Tiene un planteamiento similar al código de la función de Chi-cuadrado visto en el apratado anterior, salvo que en este caso no se realiza una tabla de contingencia para las distintas variables.\\
+	\begin{algorithm}
+		\caption{one\_way\_anova\_with\_posthoc}
+		\begin{algorithmic}
+			\REQUIRE $group1, group2, group3, i, v$
+			\ENSURE $post\_hoc$ (String) y modificación de $data\_nm["p-value"][i+3]$
+			\STATE $f\_value, p\_value \leftarrow f\_oneway(group1, group2, group3)$
+			\STATE \textbf{print} $p\_value$
+			\IF{$p\_value < 0.01$}
+			\STATE $data \leftarrow np.concatenate([group1, group2, group3])$
+			\STATE $labels \leftarrow ['group1'] * len(group1) + ['group2'] * len(group2) + ['group3'] * len(group3)$
+			\STATE $tukey\_results \leftarrow pairwise\_tukeyhsd(data, labels, 0.01)$
+			\STATE $possible\_results \leftarrow ['a', 'b', 'c']$
+			\STATE $post\_hoc \leftarrow []$
+			\FOR{$res, reject$ \textbf{in} \textbf{zip}($possible\_results, tukey\_results.reject$)}
+			\IF{$reject$ \textbf{is} \textbf{True}}
+			\STATE $post\_hoc$.append($res$)
+			\ENDIF
+			\ENDFOR
+			\STATE $post\_hoc \leftarrow$ \textbf{join}($post\_hoc, ','$)
+			\IF{$p\_value < 0.001$}
+			\STATE $data\_nm["p-value"][i+3] \leftarrow "< 0.001$"
+			\ELSE
+			\STATE $data\_nm["p-value"][i+3] \leftarrow p\_value$
+			\ENDIF
+			\ELSE
+			\STATE $data\_nm["p-value"][i+3] \leftarrow p\_value$
+			\ENDIF
+			\RETURN $post\_hoc$
+		\end{algorithmic}
+	\end{algorithm}
+	
+	\item {\textbf{Análisis estadístico detallado}} 
+	
+	Mediante el algoritmo construido, se realizó un análisis detallado de las variables, incluyendo el cálculo de porcentajes y otros valores estadísticos como la media y la desviación. Esto se consiguió con funciones correspondientes a las librerías de pandas y numpy, como Datafra-
+	me.mean() o Dataframe.std(), facilitando la realización de una comparación rigurosa de los datos. \\
+	
+	Además, un paso muy importante es deshacerse de los valores nan dentro de las variables, ya que derivan en errores y fallos en el algoritmo. Esto ocurre sobre todo al dividir a los pacientes PD en los tres grupos en función del valor de las variables 'cogstate', 'MCI\_testscore' y 'NP1COG' a lo largo del estudio. Por ello, se realizan una serie de funciones encargadas de deshacerse de los valores nan en estas columnas.\\	
+	
+	\item {\textbf{Visualización de resultados}} 
+	
+	Por último, también se incluyeron funciones de visualización que permitieron presentar los resultados de manera clara y efectiva, lo que ayudó en la interpretación de los hallazgos. En esta parte, también se realizaron las tablas en formato Latex para facilitar su inclusión en este informe.
+\end{description}
+
+\section{Análisis longitudinal y reconstrucción temporal de un único sujeto}\label{sec:Análisis de un único sujeto}
+Antes de empezar con el análisis grupal de los sujetos se llevo a cabo el estudio individual de un único paciente. Para ello hubo que realizar una adaptación de la base de datos cumpliendo unos requisitos. Esto posibilita la obtención de parámetros grupales e individuales en una escala general y que no haya discrepancias entre las distintas mediciones.\\
+
+Para llegar a obtener la progresión de las variables escogidas de un paciente y poder reconstruirlas y predecirlas es necesario desarrollar los siguientes pasos: adaptación de la cohorte, configurar los grupos y entornos de trabajo, calibrar el modelo, personalizar para el paciente escogido, reconstruir, predecir y obtener distintos parámetros de diagnóstico y comprobación de la precisión.\\
+
+\subsection{Adaptación de los datos}\label{sec:Adaptación de los datos}
+En primer lugar, se seleccionan los sujetos pertenecientes al grupo PD, es decir a los que se les ha diagnosticado Parkinson. Estos se diferencian por tener un valor igual a 1 en la columna 'APPRDX'. \\
+
+Además, dentro de este grupo hay que diferenciar entre dos clases: los pacientes cognitivamente normales (CN) y los que tienen un deterioro cognitivo medio (MCI). Para ello es importante estimar el valor de las filas de la columna 'cogstate' con valores \textit{Nan} para más adelante poder hacer un diagnóstico del estado cognitivo de los pacientes y poder saber el tiempo de conversión a declive cognitivo de cada uno de ellos. Esto se consigue con la función  \textit{'estimate\_cogstate\_sin'} que lleva a cabo los siguientes pasos:
+\begin{itemize}
+	\item \textbf{Iteración sobre sujetos sin estado cognitivo:} la función itera sobre cada sujeto que tiene valores de estado cognitivo faltantes.
+	\item \textbf{Comparación de puntajes de pruebas MCI y NP1COG:} para cada sujeto, se comparan los puntajes MCI\_testscores y NP1COG para determinar el estado cognitivo estimado.
+	\item\textbf{Asignación del estado cognitivo estimado:} se asigna el estado cognitivo estimado al sujeto según un criterio específico. Si los puntajes de ambas pruebas son iguales, se asigna ese valor como estado cognitivo. Si no, se elige el valor mínimo entre los dos puntajes como estado cognitivo.
+	\item \textbf{Actualización del estado cognitivo estimado:} se actualiza el conjunto de datos con los valores asignados.
+\end{itemize} 
+\begin{algorithm}
+	\caption{estimate\_cogstate\_sin}
+	\begin{algorithmic}
+		\REQUIRE $PATNO, cogstate, MCI\_testscores, NP1COG, ID\_sinCog$
+		\ENSURE $cogstate\_est$
+		\STATE $cogstate\_est \leftarrow$ copiar($cogstate$)
+		\FOR{$i$ \textbf{in} rango(longitud($ID\_sinCog$))}
+		\STATE $mask\_sub \leftarrow PATNO == ID\_sinCog[i]$
+		\STATE $MCI\_test\_subj \leftarrow MCI\_testscores[mask\_sub] + 1$
+		\STATE $NP1COG\_subj \leftarrow (NP1COG[mask\_sub] > 1) + 1$
+		\STATE $cog\_subj \leftarrow$ SerieNulos(con índice de $MCI\_test\_subj$)
+		\STATE $mask\_MCI\_test \leftarrow \neg$esNulo($MCI\_test\_subj$)
+		\STATE $mask\_NP1COG \leftarrow \neg$esNulo($NP1COG\_subj$)
+		\STATE $mask\_x \leftarrow (MCI\_test\_subj == NP1COG\_subj)$
+		\STATE $mask\_equal\_criteria \leftarrow \text{np.logical\_and(np.logical\_and}(mask\_x, mask\_MCI\_test), mask\_NP1COG)$
+		\IF{$\text{sumar}(mask\_equal\_criteria) > 0$}
+		\STATE $cog\_subj[mask\_equal\_criteria] \leftarrow MCI\_test\_subj.loc[mask\_equal\_criteria]$
+		\ELSE
+		\STATE $MCI\_ \leftarrow MCI\_test\_subj[mask\_MCI\_test]$
+		\STATE $NPI\_ \leftarrow NP1COG\_subj[mask\_NP1COG]$
+		\STATE $idx \leftarrow$ índice de $mask\_NP1COG$
+		\IF{longitud($idx$) > 0}
+		\STATE $cog\_subj$.at[$idx[0]$] $\leftarrow \min(MCI\_[0], NPI\_[0])$
+		\STATE $cog\_subj$.at[$idx[-1]$] $\leftarrow \min(MCI\_[\text{último}], NPI\_[\text{último}])$
+		\ENDIF
+		\ENDIF
+		\STATE $cogstate\_est[mask\_sub] \leftarrow cog\_subj$
+		\ENDFOR
+		\RETURN $cogstate\_est$
+	\end{algorithmic}
+\end{algorithm}
+
+También se calculan los tiempos de conversión a partir de las variables que indican el estado cognitivo de los individuos (NP1COG, MCI\_testscore, y cogstate) una vez eliminados los valores Nan. Se obtiene identificando el último estado registrado en cada una de ellas y asignando el tiempo asociado al mismo. Para realizar este proceso con cada variable se sigue un proceso bastante similar: se itera sobre cada participante en el estudio clínico, se filtran los datos para obtener los estados cognitivos y sus años de registro correspondientes, se identifica el último estado registrado y se asigna el ultimo año asociado al estado cognitivo como el tiempo de conversión. Los sujetos MCI/PDD son aquellos que tienen en su última visita declive cognitivo. Para estos, el tiempo de conversión es el tiempo medio entre la primera vez de MCI y la última de CU.\\
+
+El formato en el que se visualizan los tiempos de cada visita también requiere ser modificado, convirtiendo el año y mes de visita en la edad exacta con decimales del paciente en el momento de la misma. Esto facilita distintos cálculos como la obtención del pronóstico de progresión de la enfermedad y el tiempo de reserva de cada paciente.\\
+
+En función del entorno de trabajo, será o no necesario eliminar todos los valores \textit{Nan} derivados de visitas no realizadas de algunos sujetos. Por ejemplo, si se utilizase MATLAB para desarrollar el algoritmo, sería un requisito fundamental deshacerse de los \textit{Nan}, ya sea eliminándolos o utilizando métodos de interpolación, ya que los cálculos pueden fallar o dar resultados incorrectos si no se manejan adecuadamente. Pero en cambio, para este estudio se utilizó el entorno de Leaspy para Python. Con esta herramienta existen distintas estrategias para gestionar este tipo de valores: imputación de los \textit{Nan} con herramientas como \textit{'scikit-learn'} 0 \textit{'pandas'}, uso de la interpolación entre los valores conocidos, o la eliminación de los mismos.\\
+
+Para poder trabajar con las mediciones tomadas, se lleva a cabo la conversión de todos los biomarcadores a una misma escala, ya que los valores pueden ser muy variados y dificultaría la obtención de los parámetros de la trayectoria de progresión grupal de la enfermedad. Por lo que dichos valores se normalizan, obteniendo observaciones de todos los parámetros entre 0 y 1. Las medidas normales serán las más cercanas a 0, mientras que el incremento hasta llegar a 1 indica la aparición del deterioro cognitivo. Para este proceso, es necesario diferenciar entre:
+\begin{itemize}
+	\item \textbf{Variables crecientes:} indican el declive cognitivo al incrementar las mediciones tomadas.
+	\item \textbf{Variables decrecientes:} cuanto menor sean las medidas tomadas mayor declive presentará el paciente
+\end{itemize}
+
+Las variables decrecientes se invertirán negando sus puntuaciones y así lograr que sigan la misma lógica que las variables crecientes.\\
+
+\begin{algorithm}
+	\caption{percentil\_interp}
+	\begin{algorithmic}
+		\REQUIRE $features, group, prob, feat$
+		\ENSURE $feat2per, prob, feat$
+		\STATE $feat2per \leftarrow$ array de NaN del mismo tamaño que $features$
+		
+		\IF{$features$ es una Serie de pandas}
+		\STATE Convertir $features$ a DataFrame y restablecer los índices
+		\ENDIF
+		
+		\IF{$prob$ y $feat$ están definidos}
+		\STATE Utilizar np.interp solo para los valores que no son NaN
+		\STATE $not\_nan\_mask \leftarrow$ máscara de valores no NaN en $features$
+		\STATE Calcular la interpolación lineal de los valores no NaN de $feat$ usando $prob$ como puntos de referencia
+		\STATE Asignar los valores interpolados a $feat2per$
+		\ELSE
+		\STATE Equilibrar muestras:
+		\STATE Calcular el nombre del grupo y el número de muestras en cada grupo
+		\STATE Encontrar el número máximo de muestras
+		\STATE Generar muestras extra para igualar el número máximo de muestras en cada grupo
+		\STATE Concatenar las muestras extra con las características originales para crear un conjunto de datos balanceado
+		\STATE Calcular la distribución de las características balanceadas y los percentiles asociados
+		\STATE Utilizar np.interp solo para los valores que no son NaN
+		\STATE Calcular la interpolación lineal de los valores de $features$ usando los percentiles calculados como puntos de referencia
+		\STATE Asignar los valores interpolados a $feat2per$
+		\ENDIF
+		\RETURN $feat2per, prob, feat$
+	\end{algorithmic}
+\end{algorithm}
+
+Para la normalización y desnormalización de las variables, se implementó la función \textit{'percentil\_interp'}. Si la función recibe los percentiles \textit{'prob'} y valores asociados \textit{'feat'} se ejecuta la interpolación directa para recuperar los valores originales de las características. Para la normalización, se le pasan las variables y  realiza un equilibrio de muestras, calculando los percentiles y los valores asociados, con los que interpolará linealmente los valores de las características.\\
+
+\subsection{Estructuración de grupos, clases y ajustes}
+El siguiente paso fue clasificar los pacientes en distintos grupos y clases. Una vez eliminados los valores Nan de la variable \textit{'cogstate'}, podemos clasificar las visitas de cada individuo entre las dos clases definidas: MCI para aquellas en las que dicho biomarcador sea mayor que 1, y CN cuando tenga un valor igual a 0 o 1. Para obtener unos resultados más precisos, se eliminaron del grupo de pacientes del estudio todos aquellos que tuvieran menos de 2 visitas y aquellos cuyo diagnostico indicase el comienzo en estado de declive cognitivo medio en la primera visita y que en la ultima visita hubiese convertido a cognitivamente normales.\\
+
+Además, los sujetos se dividen entre 'train' y 'test'. En el primero se agrupan el 80\% de los pacientes que serán los encargados de entrenar el modelo y de los cuales se obtendrán los parámetros de la trayectoria general estimada. Con el otro 20\% se estudiará la precisión de los modelos generados mediante la obtención de parámetros individuales, que estimarán la progresión de la enfermedad de cada individuo. Con esto nos quedamos con X numero de pacientes de train y X sujetos de test.\\
+
+Después, se escogió el identificador del paciente a analizar y el rango de tiempos en el que se quiere hacer la reconstrucción de los biomarcadores seleccionados. También se configuro un modelo de Leaspy con el modelo logístico para ajustar datos longitudinales de pacientes y realizar predicciones sobre el curso de una enfermedad:
+\begin{itemize}
+	\item Configuración del Modelo de Leaspy: se establece el modelo logístico y se define el modelo de ruido como gaussiano diagonal para estimar la incertidumbre en las características.
+	\item Configuración del Algoritmo de Estimación: se elige el algoritmo de estimación 'mcmc\_saem' que combina MCMC y SAEM, con 50 iteraciones y una semilla aleatoria fija para reproducibilidad.
+	\item Configuración de los Registros y Salidas: Se establece la ruta de los registros, la periodicidad para guardar y visualizar resultados, y se decide si sobrescribir los registros existentes.
+\end{itemize}
+
+\subsection{Estimación de modelos}
+En primer lugar es fundamental tener claro el concepto de \textit{bootstrap}, ya que será la técnica utilizada para generar las muestras de cada uno de los modelos estimados. Estas se crean mediante el muestreo aleatorio con remplazo del conjunto de datos de entrenamiento original. Se trabaja con esta técnica por varias razones:
+\begin{itemize}
+	\item Permite la estimación de parámetros estadísticos cuando no se conoce las distribuciones teóricas o con muestras pequeñas.
+	\item Se pueden calcular intervalos de confianza para los parámetros estimados.
+	\item Tiene la capacidad de evaluar la estabilidad y el rendimiento de un modelo predictivo mediante validación cruzada.
+	\item Permite realizar pruebas de hipótesis.
+\end{itemize}
+
+En cada uno de los diez bootstrap que se crean se estimará un modelo en el que un 80\% de los sujetos de train escogido al azar se utilizará para su entrenamiento y el otro 20\% restante formará parte del grupo de validación.
+\\
+
+Para lograr diferentes cálculos con los modelos, se llevan a cabo una serie de proceso con cada uno de los boostraps:
+\begin{description}
+	\item \textbf{Calibración}\\
+	Iterando con cada muestra bootstrap, se calculan los parámetros indicados en la tabla \ref{tab:tabla6} y la trayectoria grupal. Esto se consigue primero convirtiendo el DataFrame de la muestra en una variable tipo \textit{Data}, compatible con Leaspy. Este objeto tendrá todos los parámetros necesarios para el ajuste del modelo. \\
+	
+	\begin{table}[t]
+		\centering
+		\begin{tabular}{|c||c|} 
+			\hline
+			\multicolumn{2}{|c|}{Parámetros de calibración} \\
+			\toprule
+			Edad &  $t_{k}$\\ 
+			\hline
+			Valor normalizado de los biomarcadores &  $p_{k}$  \\
+			\hline
+			Velocidad de evolución & $v_{k}$  \\
+			
+			\bottomrule
+		\end{tabular}
+		\caption{Parámetros para el proceso de calibración para la obtención de la curva a largo plazo (\textit{Trayectoria 'Long-term'})}
+		\label{tab:tabla6}
+	\end{table}
+	
+	Luego se ajusta llamando a la función \textbf{leaspy.fit}, a la cual se le pasa el objeto Data y los ajustes del algoritmo especificados previamente. Esto realiza la calibración con los datos de la muestra bootstrap actual. Este proceso genera unos parámetros que definen el modelo ajustado, los cuales se guardan en una estructura de datos llamada \textit{'parameters'} y a la cual se puede acceder con la función \textbf{leaspy.model.parameters}. En función de los índices t0, p0 y v0 se obtiene la curva \textit{'long-term'} de cada variable correspondiente al grupo de pacientes de cada modelo contruido. \\
+
+	
+	Una vez se obtienen estos parámetros, se van guardando los modelos ajustados en cada iteración en formato JSON en el directorio:\\
+	\begin{center}
+		\texttt{Demos/rroca\_python/pred\_sujeto/outputs}. 
+	\end{center} 
+	
+	\item \textbf{Personalización}\\
+	Tras realizar la calibración se procede a personalizar cada uno de los diez modelos al sujeto escogido y así luego llevar a cabo la reconstrucción e imputación de los datos. Con la función \textbf{leaspy.personalize} se obtienen los factores individuales observados en la tabla \ref{tab:tabla7} que indican la variación de la curva de progresión del individuo respecto a la trayectoria global calculada en el paso anterior.
+	
+	\begin{table}[t]
+		\centering
+		\begin{tabular}{|c||c|} 
+			\hline
+			\multicolumn{2}{|c|}{Parámetros de personalización} \\
+			\toprule
+			Reserva cognitiva &  $\tau_{i}$\\ 
+			\hline
+			Factor de aceleración &  $\alpha_{i}$  \\
+			\hline
+			Espacio entre marcadores & $w_{k}$  \\
+			
+			\bottomrule
+		\end{tabular}
+		\caption{Parámetros para el proceso de personalización para la obtención de la curva a corto plazo de cada individuo (\textit{Trayectoria 'Short-term'})}
+		\label{tab:tabla7}
+	\end{table}
+	
+	Leaspy ajusta los parámetros para el sujetos utilizando los datos observados y el algoritmo de optimización especificado ('scipy\_minimize'), obteniendo. La trayectoria de cada variable del individuo se obtiene a partir de la curva global y con las siguientes variables.Estas indican las diferencias en la porgresión del individuo con respecto a la curva general.\\
+	
+	\begin{itemize}
+		\item \textbf{\textit{'tau'}:} es un tipo de dato escalar que mide la reserva cognitiva del sujeto. Indica en años el tiempo para que entre en declive cognitivo. 
+		\item \textbf{\textit{'xi'}:} es el logaritmo neperiano del factor de aceleración, o lo que es lo mismo:
+		\begin{equation}
+			\alpha_{i}=exp(x_{i})
+		\end{equation}
+		Indica la diferencia en la velocidad entre la progresión de la enfermedad del paciente escogido y del grupo utilizado en el modelo. Es un tipo de dato escalar, al igual que tau
+		\item \textbf{\textit{'sources'}:} Es una variable de tipo vector que representa el espacio entre marcadores intermedios ($w_{ik}$).
+	\end{itemize}
+	 El objetivo es maximizar la verosimilitud de los datos observados de cada sujetos buscando los valores óptimos de \textit{'sources', tau'} y \textit{'xi'}. Al final del proceso se obtienen los valores específicos para el paciente que mejor representan la progresión de la enfermedad. La evolución de cada variable del paciente se representa en la trayectoria \textit{'short-term'}
+	 
+	 \item \textbf{Reconstrucción, imputación y predicción}\\
+	 Con el modelo personalizado, se realiza la reconstrucción y predicción, generando una serie temporal de 100 observaciones entre los tiempos indicados, un año antes de la primera visita y hasta cinco años después de la última. Esto se logra llamando a la función \textbf{leaspy.estimate} introduciendo los parámetros individuales y los tiempos a estimar.\\
+	 
+	 Teniendo en cuenta que todos los pasos realizados hasta el momento han sido en escala normalizada, ahora se realiza la transformación de las reconstrucciones de las variables a su escala original.  Se pasa a la función \textbf{'percentil\_interp'} las reconstrucciones junto a el punto de la variable de referencia (\textit{'v\_feat'}) y el vector de percentiles (\textit{'v\_percent}).
+	 
+	 \begin{algorithm}
+	 	\caption{Personalización, Reconstrucción, Imputación y Predicción}
+	 	\begin{algorithmic}
+	 		\FOR{$i$ in range($btps$)}
+	 		\STATE $model\_filename \leftarrow$ "model\_parameters" + str($i$) + ".json"
+	 		\STATE $model\_path \leftarrow$ join("outputs/", $model\_filename$)
+	 		\STATE $leaspy \leftarrow leaspy.load($model\_path$)$
+	 		\STATE \textbf{\# PERSONALISATION}
+	 		\STATE $settings\_personalization \leftarrow$ AlgorithmSettings('scipy\_minimize', seed=0)
+	 		\STATE $ip \leftarrow leaspy.personalize(data\_df, settings\_personalization)$
+	 		\STATE \textbf{\# RECONSTRUCTION, IMPUTATION, PREDICTION (WITH NORMALIZED VALUES)}
+	 		\STATE $observations \leftarrow df\_pred.reset\_index().copy()$
+	 		\STATE $observations.drop('ID', axis=1, inplace=True)$
+	 		\STATE $observations.set\_index('TIME', inplace=True)$
+	 		\STATE $timepoints \leftarrow np.linspace(anho\_min\_det, anho\_max\_det, 100)$
+	 		\STATE $reconstruction\_norm \leftarrow leaspy.estimate(\{x: timepoints\}, ip)$
+	 		\STATE $col \leftarrow ["ABETA", "HVLTRDLY", "LNS", "MEANCAU", "SDMT", "SFT"]$
+	 		\STATE $df\_rec\_sujnorm \leftarrow []$
+	 		\FOR{$j$ in range(100)}
+	 		\STATE $d3 \leftarrow \{k: v[j] \text{ for } k, v \text{ in } reconstruction\_norm.items()\}$
+	 		\STATE $i \leftarrow$ str($i$)
+	 		\STATE $dw \leftarrow pd.DataFrame.from\_dict(d3, orient='index', columns=[s + "_model_" + i \text{ for } s \text{ in } col])$
+	 		\STATE $df\_rec\_sujnorm.append(dw)$
+	 		\ENDFOR
+	 		\STATE $df\_rec\_sujnorm \leftarrow pd.concat(df\_rec\_sujnorm, axis=0).reset\_index(drop=True)$
+	 		\STATE $reconstruciones\_norm.append(df\_rec\_sujnorm)$
+	 		\STATE \textbf{\# PLOT TRAJECTORY}
+	 		\STATE plot\_trajectory($timepoints, reconstruction\_norm[x], observations, i, j=0$)
+	 		\STATE \textbf{\# RECONSTRUCTION, IMPUTATION, PREDICTION (WITH ORIGINAL VALUES)}
+	 		\STATE $v\_percent \leftarrow [$percent\_ABETA, percent\_HVLTRDLY, percent\_LNS, percent\_MEANCAU, percent\_SDMT, percent\_SFT$]$
+	 		\STATE $v\_feat \leftarrow [$point\_feat\_ABETA, point\_feat\_HVLTRDLY, point\_feat\_LNS, point\_feat\_MEANCAU, point\_feat\_SDMT, point\_feat\_SFT$]$
+	 		\STATE $var\_rec\_suj \leftarrow$ ['ABETA\_model\_' + $i$, 'HVLTRDLY\_model\_' + $i$, 'LNS\_model\_' + $i$, 'MEANCAU\_model\_' + $i$, 'SDMT\_model\_' + $i$, 'SFT\_model\_' + $i$]
+	 		\STATE $df\_rec\_sujorig \leftarrow$ pd.DataFrame()
+	 		\FOR{$k, v$ in enumerate($var\_rec\_suj$)}
+	 		\STATE $df\_rec\_sujorig[v] \leftarrow$ inverse\_percentil\_interp($df\_rec\_sujnorm.loc[:, v]$, $v\_feat[k]$, $v\_percent[k]$)
+	 		\STATE $df\_rec\_sujorig[v] \leftarrow -$ $df\_rec\_sujorig[v]$
+	 		\ENDFOR
+	 		\STATE $reconstruciones\_orig.append(df\_rec\_sujorig)$
+	 		\STATE $reconstruction\_orig \leftarrow \{x: df\_rec\_sujorig.values\}$
+	 		\STATE $observations\_orig \leftarrow df\_pred\_orig.reset\_index(drop=True).copy()$
+	 		\STATE $observations\_orig.drop('ID', axis=1, inplace=True)$
+	 		\STATE $observations\_orig.set\_index('TIME', inplace=True)$
+	 		\STATE plot\_trajectory($timepoints, reconstruction\_orig[x], observations\_orig, i, j=1$)
+	 		\ENDFOR
+	 	\end{algorithmic}
+	 \end{algorithm}
+	 
+	 \item \textbf{Representación gráfica}\\	 
+	 Una vez se tienen las reconstrucciones de las variables para el individuo seleccionado, se llama a una función que representa las trayectorias de cada una de las variables. Hace una gráfica para cada uno de los biomarcadores, representando tanto los valores normalizados como en su escala original para cada una de los diez bootstraps. Se ejecuta la función \textbf{'plot\_trajectory} a la que se le mandan los puntos temporales estimados, su reconstrucción y otros parámetros si es necesario.
+	 
+	 \begin{algorithm}
+	 	\caption{plot\_trajectory}
+	 	\begin{algorithmic}[1]
+	 		\REQUIRE $timepoints, reconstruction, observations, i, j$
+	 		\IF{$observations$ is not $None$}
+	 		\STATE $ages \leftarrow$ index values of $observations$
+	 		\ENDIF
+	 		\STATE Create a new figure with a size of $14 \times 6$
+	 		\IF{$j == 0$}
+	 		\STATE $title \leftarrow$ 'Progresión Variables Normalizadas (Modelo $i$)' if $i$ is not $None$ else 'Progresión Variables Normalizadas'
+	 		\ELSIF{$j == 1$}
+	 		\STATE $title \leftarrow$ 'Progresión Variables Originales (Modelo $i$)' if $i$ is not $None$ else 'Progresión Variables Originales'
+	 		\ENDIF
+	 		\STATE Set the super title of the figure to $title$ with a fontsize of 16
+	 		\STATE Set the y-axis limit to $(0, 1)$
+	 		\STATE Set the y-axis label to 'Biomarker normalized value'
+	 		\STATE Set the x-axis limit to $(anho\_min\_det - 10, anho\_max\_det + 10)$
+	 		\STATE Set the x-axis label to 'Patient age'
+	 		\STATE Define colors as $['\#ef5675', '\#577590', '\#48a07e', '\#f4d35e', '\#7a5195', '\#f4874b']$
+	 		\FOR{$i$ in range(len(leaspy.model.features))}
+	 		\STATE $c, name, val \leftarrow$ current color, feature name, and reconstruction values
+	 		\STATE Create a subplot with index $i+1$
+	 		\STATE Plot $val$ against $timepoints$ with label $name$, using color $c$ and linewidth 3
+	 		\IF{$observations$ is not $None$}
+	 		\STATE Plot the observations of $name$ against $ages$ using color $c$, marker 'o', and markersize 12
+	 		\ENDIF
+	 		\STATE Display legend
+	 		\ENDFOR
+	 		\STATE Adjust layout of subplots
+	 		\STATE Show the plot
+	 	\end{algorithmic}
+	 \end{algorithm}	 
+	 
+\end{description}
+
+\section{Modelos de progresión de la enfermedad (DPMs) con múltiples sujetos}
+Tras obtener la progresión de un conjunto de biomarcadores concreto para un determinado individuo, el siguiente paso consiste en construir un algoritmo capaz de llevar a cabo el mismo proceso para toda la cohorte. Además, el objetivo de este estudio es encontrar el conjunto de características que estimen con la mayor precisión posible cual sería la evolución de la enfermedad para individuos nuevos. Por ello, se realiza un programa capaz de obtener todas las combinaciones posibles y llevar a cabo todo el proceso de estimación para cada modelo.\\
+
+
+
+A la hora de comprender el progreso temporal de enfermedades como el Parkinson o el Alzheimer, se utilizan los modelos de progresión (DPMs) \cite{ghazi2021robust}. Con ellos se identifican patrones y etapas y predicen como van a evolucionar los pacientes de la muestra tomada. Para ello, se realiza un estudio longitudinal de los sujetos tomando medidas de ciertos biomarcadores clínicos y neuropsicológicos durante varias visitas en distintos tiempos. Esto permite estimar DPMs con conjuntos de variables diferentes e identificar el grupo de biomarcadores que mejor predicen la evolución de la enfermedad y el estado clínico de individuos concretos y así poder desarrollar nuevas técnicas de diagnóstico y tratamiento.\\
+
+Para una correcta estimación de los modelos, se tienen en cuenta varios principios:
+\begin{itemize}
+	\item Optimización eficiente: los parámetros de los modelos se hayan iterando hasta alcanzar la convergencia de los mismo para conseguir una búsqueda efectiva. El proceso se repite varias veces hasta conseguir el grupo de parámetros más ajustado y mejorando su rendimiento.
+	\item Modelado robusto: la cohorte analizada puede tener particularidades ya que nos todos los pacientes tienen el mismo numero de visitas y pueden existir valores nulos en las mediciones de las variables. Además los biomarcadores pueden ser variables debido a factores como edad, género o salud. Por esto es necesario usar distintos métodos como la normalización.
+	\item Validación cruzada: evalúa el rendimiento de los modelos en diferentes conjuntos de datos.
+\end{itemize} 
+
+Por otro lado, se quiere comparar la precisión de dos métodos de predicción y pronóstico distintos: Leaspy y RPDPM (\textit{Robust Paramétric Disease Progression Modeling}). Por lo que se construyen dos algoritmos de estimación distintos, utilizando la aplicación de MATLAB para RPDPM y SPYDER para Leaspy. El primero se ubica en el directorio:
+\begin{center}
+	\texttt{Demos/rroca python/multi\_RPDPM\_PPMI}
+\end{center}
+y el segundo en la carpeta ubicada en:
+\begin{center}
+	\texttt{Demos/rroca python/multi\_leaspy}
+\end{center}
+
+La estimación de modelos en cada método sigue un procedimiento bastante similar. A continuación se destacan algunas de las particularidad de cada uno.
+
+\subsection{RPDPM}
+En el caso del modelado paramétrico y robusto de progresión de la enfermedad, es necesario eliminar los valores \textit{Nan} para evitar errores a la hora de ejecutar el código. Además, este algoritmo trabaja con los valores originales de los biomarcadores, sin necesidad de normalizarlos. Sin embargo, se delimitan unos rango para ciertas características, eliminando así valores anormales o demasiado elevados que puedan generar resultados poco precisos.\\
+
+Como función de estimación robusta se utiliza una función logística. EL modelo geométrico para las trayectorias se define como:
+\begin{equation}
+	f(s; \Theta) = (a - d)g(s; \Theta) + d
+\end{equation}
+ donde \textit{a} y \textit{d} son parámetros de normalización para los marcadores y $g(s; \Theta)$ representa la función logística. \cite{9225726}
+
+\subsection{Leaspy}
+En el caso de Leaspy, este entorno es capaz de gestionar los valores \textit{Nan}, por lo que no es necesario eliminar al inicio los pacientes con esto valores. En cambio es necesario trabajar con los valores normalizados de los biomarcadores, por lo que se lleva a cabo un proceso de nacionalización de los mismos. \\
+
+El proceso llevado a cabo con este método conlleva los siguientes pasos:\\
+\begin{itemize}
+	\item Estimación de parámetros inciales mediante la construccion de la trayectoria \textit{long-term} y la personalización obteniendo los parametros individuales.
+	\item Obtención de la puntuación de progresión de la enfermedad.
+	\item Calculo de las medidas de calidad de los modelos.
+\end{itemize}
+
+En los siguientes apartados se explica mas en detalle todos los pasos llevados a cabo.
+
+
+
+
+
+
+\subsection{Estimación de los DPMs}
+Para el cálculo de los modelos de predicción de la enfermedad se llevan a cabo distintos pasos:\\
+
+
+\subsubsection{Paso 1. Preparación de los datos.}
+	
+En este apartado se sigue un proceso muy similar a la \nameref{sec:Adaptación de los datos} de la sección \ref{sec:Análisis de un único sujeto}, donde se carga la cohorte con la que se va a trabajar y se lleva a cabo la normalización de las escalas de los marcadores, tratamiento de los valores \textit{Nan} necesarios y obtención del estado cognitivo de cada paciente en cada visita. Para ello se llama a las funciones  \textbf{getDataPPMI}, \textbf{prep\_data}, \textbf{pre\_funciones} y \textbf{pre\_funciones2}, dentro del directorio:
+\begin{center}
+	\texttt{Demos/rroca\_python/multi\_leaspy/funciones}. 
+\end{center}
+	
+Por otro lado, se definen los distintos directorios con los que se trabajará, tanto para cargar la base de datos, como para guardar los distintos parámetros que se generan durante la ejecución del programa. Para hacer más sencillo esto, se utiliza la biblioteca \textit{os}, la cual facilita funciones para obtener los directorios de ejecución de cualquier archivo, para cambiar de directorio y muchas otras acciones. \\
+	
+Además, en este caso, para generar los conjuntos de posibles combinaciones de variables para los que se quiera crear el modelo de predicción, hay que definir el set de la/las variables seleccionadas. También se define el rango de tamaños que tendrán los vectores que se generarán de combinaciones de los biomarcadores escogidos. Por ejemplo, se podrían definir como variables de trabajo: MOCA, GDS, LNS, HVLTRDLY y SFT, y un rango para los vectores de entre 3 y 5, lo que generaría una tabla con las posibles combinaciones como la de la tabla \ref{tab:combinaciones} tras ejecutar el\textit{Algoritmo 7}.\\
+
+	
+\begin{table}[h!]
+	\centering
+	\label{tab:combinaciones}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\textbf{Variable 1} & \textbf{Variable 2} & \textbf{Variable 3} & \textbf{Variable 4} & \textbf{Variable 5} \\ \hline
+		MOCA & GDS & LNS &  &  \\ \hline
+		MOCA & GDS & HVLTRDLY &  &  \\ \hline
+		MOCA & GDS & SFT &  &  \\ \hline
+		MOCA & LNS & HVLTRDLY &  &  \\ \hline
+		MOCA & LNS & SFT &  &  \\ \hline
+		MOCA & HVLTRDLY & SFT &  &  \\ \hline
+		GDS & LNS & HVLTRDLY &  &  \\ \hline
+		GDS & LNS & SFT &  &  \\ \hline
+		GDS & HVLTRDLY & SFT &  &  \\ \hline
+		LNS & HVLTRDLY & SFT &  &  \\ \hline
+		MOCA & GDS & LNS & HVLTRDLY &  \\ \hline
+		MOCA & GDS & LNS & SFT &  \\ \hline
+		MOCA & GDS & HVLTRDLY & SFT &  \\ \hline
+		MOCA & LNS & HVLTRDLY & SFT &  \\ \hline
+		GDS & LNS & HVLTRDLY & SFT &  \\ \hline
+		MOCA & GDS & LNS & HVLTRDLY & SFT \\ \hline
+	\end{tabular}
+	\caption{Combinaciones de las Variables MOCA, GDS, LNS, HVLTRDLY y SFT}
+\end{table}
+	
+	
+\begin{algorithm}
+	\caption{Generación de conjuntos de marcadores}
+	\begin{algorithmic}[1]
+		\REQUIRE $features\_set\_i, features\_set, max\_dim, vector\_range$
+		\STATE $features\_set\_i \gets features\_set$
+		\STATE $features\_set \gets$ rango(0, longitud(features\_set))
+		\STATE $max\_dim \gets$ último elemento de vector\_range
+		\STATE $features\_subset\_matrix \gets$ matriz llena de NaN de tamaño (10000, max\_dim)
+		\STATE $next\_row \gets 0$
+		\FOR{$i$ en vector\_range}
+		\STATE $aux\_subsets \gets$ combinaciones(features\_set, $i$)
+		\STATE $aux\_subsets \gets$ convertir a arreglo las combinaciones obtenidas
+		\STATE $n\_rows \gets$ número de filas de aux\_subsets
+		\STATE $features\_subset\_matrix[next\_row:next\_row+n\_rows, :i] \gets aux\_subsets$
+		\STATE $next\_row \gets next\_row + n\_rows$
+		\ENDFOR
+		\STATE $features\_subset\_matrix \gets features\_subset\_matrix[:next\_row, :]$
+	\end{algorithmic}
+\end{algorithm}
+	
+Con las 16 combinaciones posibles de variables, se genera un bucle donde se llama a la función \textbf{build\_Leaspy} con cada uno de los conjuntos.
+	
+Además, en este pasó, como ya se explicó anteriormente, llamando a la función \textbf{prep\_data}, se construyen los conjuntos de pacientes para train (80\%) y para test (20\%). Esta función también genera el diágnostico en la primera y en la última visita de cada paciente, así pudiendo determinar cuales avanzan hacia el declive cognitivo durante las observación, los que muestran deterioro desde el principio o los que se mantienen cognitivamente normales.\\
+	
+	
+\subsubsection{Paso 2. Estimación del modelo (para cada conjunto de variables)}
+
+Esta parte tiene lugar principalmente en la función \textbf{build\_Leaspy.py}, desde donde se llaman a múltiples funciones para realizar todos los pasos necesarios para predecir de la evolución de los biomarcadores seleccionados en el paso anterior.\\
+
+Tras definir los ajustes algorítmicos de Leaspy, se llama a la función que calibra los modelos: (\textbf{build\_model\_leaspy}). Para ello, se realiza la calibración de cada uno de los diez \textit{bootstraps} con una combinación distinta de pacientes, formada por el 80\% de los sujetos de entrenamiento. Los parámetros que definen la trayectoria grupal media, calculados al ejecutar \texttt{leaspy.fit(data\_train, settings=algo\_setttings)}, se guardan en diez archivos \textit{.JSON}, una para cada \textit{bootstrap}, dentro de una carpeta que indica los indices de los biomarcadores del modelo. Por ejemplo, para los biomarcadores con indices 1,7 y 24, el directorio sería:
+	
+\begin{center}
+	\texttt{Demos/rroca\_python/multi\_leaspy/outputs/data\_multi/
+		Leaspy\_vars\_1\_7\_24}
+\end{center}
+
+El nombre de los archivos con los parámetros del modelo se llama\\
+\texttt{model\_parameters\{i\}.json}, siendo \textit{i} el número del \textit{bootstrap} correspondiente.\\
+	
+	
+\subsubsection{Paso 3. Personalización.}
+	
+Una vez obtenida la trayectoria global, toca calcular los parámetros individuales de la curva que siguen los marcadores para cada sujeto, tanto de \textit{test} como de \textit{train}, para las diez muestras. Por lo que se llama a la función \textbf{Leaspy\_Test\_
+personalization.py} por un lado con los pacientes nuevos de test y por otro lado con los pacientes de entrenamiento utilizados para obtener los parámetros globales.\\
+
+Para hacer esto, se utiliza un bucle en el cual se personaliza, reconstruyen y predicen los valores normalizados de los biomarcadores del modelo. Ejecutando \texttt{leaspy.personalize(data\_test, settings\_personalization)} se obtienen los parámetros individuales (xi, tau y sources) que se utilizan para realizar la reconstrucción y predicción de las curvas de las variables, para cada paciente dentro de cada grupo, ejecutando \texttt{leaspy.estimate()}. Así se obtiene el valor estimado para un tiempo concreto a partir de los parámetros obtenidos de cada paciente. Para estos últimos, se calcula la media de los diez bootstraps para cada paciente y se guardan dichos valores en el directorio:
+	
+\begin{center}
+	\texttt{Demos/rroca\_python/multi\_leaspy/outputs/individual\_parameters}
+\end{center}
+	
+Dentro de \textbf{Leaspy\_Test\_personalization.py} también se llama a la función encargada de calcular el error absoluto medio (MAE) en escala original y normalizada (NMAE), lo cual se explica más detalladamente en los próximos apartados.
+	
+\begin{algorithm}
+	\caption{Leaspy\_Test\_personalization}
+	\begin{algorithmic}[1]
+		\REQUIRE $output\_dir$, $btstrp$, $df\_test$, $df\_orig$, $labels$, $leaspy$, $algo\_settings$, $IPs$, $prest\_fich\_name$, $ips\_fich\_name$
+		\STATE $recs\_todosXbstrp \gets []$
+		\FOR{$i \gets 0$ \textbf{to} $btstrp-1$}
+		\STATE Cargar $leaspy$ desde $output\_dir$
+		\STATE Convertir $df\_test$ a $data\_test$
+		\STATE Personalizar $data\_test$ con $leaspy$ y almacenar en $IPs[i]$
+		\FOR{$x$ \textbf{in} $df\_test$}
+		\STATE Obtener visitas inicial y final para $x$
+		\STATE Definir $timepoints$ para $x$
+		\STATE Reconstruir datos normalizados para $x$ usando $leaspy$
+		\STATE Almacenar reconstrucción en $recs\_todosXbstrp[i][x]$
+		\ENDFOR
+		\ENDFOR
+		\STATE Calcular $IPs\_means\_df$ como la media de $IPs$
+		\FOR{$x$ \textbf{in} $df\_test$}
+		\STATE Concatenar resultados de $recs\_todosXbstrp$ para $x$
+		\ENDFOR
+		\STATE Calcular $NMAE$ y $MAE$ usando $Obtener\_NMAE$
+		\RETURN $recs\_todosXbstrp$, $IPs$, $IPs\_means\_df$, $NMAE$, $MAE$, $visitas\_finales$, $visitas\_iniciales$
+	\end{algorithmic}
+\end{algorithm}
+	
+	
+\subsection{Métricas de los DPMs}
+Una vez estimadas las trayectorias de los biomarcadores escogidos para el modelo, se mide su precisión. Las prestaciones encargadas de esta labor se dividen en dos categorías:
+\begin{itemize}
+	\item Métricas para la evaluación de precisión de la estimación temporal de las trayectorias de los pacientes. Aquí se incluyen MAE y el NMAE.
+	\item Métricas para la evaluación del diagnóstico del paciente a lo largo del tiempo. Esto engloba el tiempo de reserva estimado para eventos clínicos, el tiempo de conversión hacia el declive cognitivo y el área bajo la curva (AUC), calculada a partir del clasificador Bayesiano utilizando KDE (estimación de densidad del núcleo) y basándose en el DPS (\textit{Disease Progresion Score}) calculado previamente.
+\end{itemize}
+
+\subsubsection{Paso 1. Cálculo del MAE y NMAE}
+En primer lugar, el MAE y NMAE se calculan desde la función \textbf{Leaspy\_Test\_
+personalize.py}, llamando a \textbf{Obtener\_NMAE.py} y devolviendo el error absoluto medio con las escalas originales y normalizadas para todos los pacientes, biomarcadores y \textit{bootstraps} indicados. Como se ve en el pseudocódigo dentro del \textit{Algorithm 8}, el procedimiento para obtener estas medidas se lleva a cabo comparando las reconstrucciones en los tiempos de las visitas de los pacientes con los valores de las propias observaciones. Es decir, para cada modelo el MAE es la media de las diferencias entre las estimaciones y las muestras en cada tiempo muestreado.\\
+
+Primero se calcula el NMAE, ya que tanto las estimaciones como las observación están en escalas normalizadas con valores entre 0 y 1. Después, para obtener un valor más exacto de cuán precisas son las predicciones se calcula el MAE, pasando previamente todas las medidas a las escalas originales de los biomarcadores. Esto se hace utilizando la función \textbf{percentil\_interp.py} de forma inversa a cuando se llevo a cabo la normalización.
+	
+\begin{algorithm}
+	\caption{Obtener NMAE y MAE}
+	\begin{algorithmic}[1]
+		\REQUIRE $recs\_btstrps$, $df\_test$, $df\_orig$, $labels$, $btstrp$, $features$, $idx\_test$, $timepoints\_all$, $prest\_fich\_name$
+		\STATE $NMAE\_subjectsXbstrpsXfeats \gets \{\}$
+		\STATE $MAE\_subjectsXbstrpsXfeats \gets \{\}$
+		\FOR{$x$ en $idx\_test$}
+		\STATE $label \gets labels[x]$
+		\STATE $timepoints \gets timepoints\_all[x]$
+		\STATE $observations \gets df\_test[df\_test['ID']==x]$
+		\STATE Eliminar columna 'ID' de $observations$
+		\STATE Establecer índice de $observations$ como 'TIME'
+		\STATE $TIME\_obs \gets observations.index.get\_level\_values('TIME')$
+		\STATE $indices\_cercanos \gets \text{argmin}(\text{abs}(timepoints - numero)) \text{ para cada } numero \text{ en } TIME\_obs$
+		\STATE $df\_estimations\_norm \gets recs\_btstrps[x].iloc[indices\_cercanos]$
+		\FOR{$a$ en $features$}
+		\STATE $samples\_n \gets observations[a]$
+		\STATE $feat\_estim\_n \gets df\_estimations\_norm[a]$
+		\STATE Cargar $pfeat$ y $percent$ de archivos correspondientes
+		\STATE $samples\_o \gets df\_orig[a]$
+		\STATE $feat\_estim\_o \gets -\text{percentil\_interp}(feat\_estim\_n, label, pfeat, percent)$
+		\STATE $nmae\_list.append(\text{calculate\_mae}(samples\_n, feat\_estim\_n))$
+		\STATE $mae\_list.append(\text{calculate\_mae}(samples\_o, feat\_estim\_o))$
+		\ENDFOR
+		\STATE Almacenar resultados en $NMAE\_subjectsXbstrpsXfeats[x]$ y $MAE\_subjectsXbstrpsXfeats[x]$
+		\ENDFOR
+		\STATE Calcular medias para cada variable y bootstrap
+		\RETURN $NMAE\_subjectsXbstrpsXfeats$, $MAE\_subjectsXbstrpsXfeats$, $NMAE\_means\_df$, $MAE\_means\_df$
+	\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Paso 2. Cálculo del DPS (Disease Progresion Score)}
+Para poder medir la precisión del diagnóstico estimado para los pacientes, se calcula la Puntuación de Progresión de la Enfermedad (DPS). Esta medida indica el estado de la enfermedad en el que se encuentran los individuos en tiempos concretos, modelando el avance de la enfermedad en función de los parámetros individuales obtenidos durante la personalización. La fórmula del DPS es:\\
+
+\begin{equation}
+	\text{DPS} = \exp(x_{i}) \cdot (t_{ij} - \tau)
+\end{equation}
+
+siendo $x_{i}$ y $\tau$ parámetros \textit{short-term} propios de cada individuo y obtenidos durante la personalización al ejecutar \textbf{leaspy.personalize}. $\tau$ representa la reserva cognitiva en años y $x_{i}$ indica la velocidad a la que avanza la enfermedad en el paciente en comparación con la media, tal y como se explica en el apartado \ref{sec:parámetros de leaspy}. Por otro lado, $t_{ij}$ es el tiempo en el que se observa al individuo.\\
+
+\subsubsection{Paso 3. Cálculo del clasificador Bayesiano y Área Bajo la Curva (AUC)}
+Una vez obtenidos los DPS tanto para el grupo de \textit{test} como para el de \textit{train}, se clasifica el estado clínico de los sujetos de entrenamiento basándose en un clasificador Bayesiano que utiliza KDE (Kernel Density Estimation) \cite{content94:online}.  Este clasificador asigna probabilidad a los posibles estados clínicos (cognitivamente normal (CN) o deterioro congitivo leve (MCI)) en función de los valores del DPS de los datos de entrenamiento.\\
+
+
+
+En el programa se calculan los siguientes valores fundamentales en este apartado:
+
+\begin{enumerate}
+	\item \textbf{Estimación de la Probabilidad a Priori ($P(C_k)$)}:
+	para cada clase (\textit{CN} y \textit{MCI}), se calcula la probabilidad a priori, que es la proporción de pacientes que pertenecen a esa clase en el conjunto de datos de entrenamiento. Matemáticamente, esta probabilidad se expresa como:
+
+	\begin{equation}
+		P(C_k) = \frac{\text{Número de sujetos en la clase } 	C_k}{\text{Número total de sujetos en el entrenamiento}}
+	\end{equation}
+
+	\item \textbf{Estimación de la Verosimilitud ($P(x | C_k)$) mediante KDE}: 
+	se utiliza la Estimación de Densidad de Kernel (KDE) para modelar la distribución del DPS en cada clase. KDE es una técnica que permite estimar la función de densidad de probabilidad de una variable aleatoria, en este caso, el DPS. Para cada clase, se ajusta un modelo KDE a los DPS de los sujetos que pertenecen a esa clase, lo que permite calcular la probabilidad de observar un DPS particular dado que pertenece a esa clase.
+
+	\item \textbf{Cálculo de la Evidencia ($P(x)$)}: 
+	la evidencia se calcula sumando las verosimilitudes de todas las clases, ponderadas por sus respectivas probabilidades a priori. La evidencia indica la probabilidad total de observar un determinado DPS sin importar la clase.
+
+	\begin{equation}
+		P(x) = \sum_{k} P(x | C_k) \cdot P(C_k)
+	\end{equation}
+
+	\item \textbf{Cálculo de la Probabilidad a Posteriori ($P(C_k | x)$)}: 
+	utilizando el Teorema de Bayes, se calcula la probabilidad a posteriori de que un sujeto con un DPS determinado pertenezca a la clase \textit{CN} o \textit{MCI}. Esta probabilidad a posteriori se calcula como:
+
+	\begin{equation}
+		P(C_k | x) = \frac{P(x | C_k) \cdot P(C_k)}{P(x)}
+	\end{equation}
+
+	\item \textbf{Predicción de la clase}:
+	después de calcular la probabilidad a posteriori para cada clase, el clasificador asigna al sujeto la clase con la mayor probabilidad a posteriori.
+\end{enumerate}
+
+\begin{algorithm}
+	\caption{Entrenamiento Bayesiano con KDE}
+	\begin{algorithmic}[1]
+		\REQUIRE $dps\_train$, $labels$, $unique\_labels$
+		\STATE $labels \gets \text{labels.stack()}$
+		\STATE $dps\_train \gets \text{dps\_train.ravel()}$
+		\STATE $dps\_train \gets \text{dps\_train[}\sim\text{np.isnan(dps\_train)]}$
+		\STATE $C \gets \text{len}(unique\_labels)$
+		\STATE $prior \gets \text{np.zeros}(C)$
+		\STATE $likelihood \gets \{\}$
+		
+		\FOR{$c$ en $\text{range}(C)$}
+		\STATE $prior[c] \gets \sum(\text{labels} == unique\_labels[c]) / \text{len(labels)}$
+		\STATE $model \gets \text{gaussian\_kde}(dps\_train[labels == unique\_labels[c]])$
+		\STATE $likelihood[c] \gets model$
+		\ENDFOR
+	
+		\STATE \textbf{Función} evidence$(likelihood, prior, points)$
+		\STATE \quad $ev \gets \text{np.zeros\_like}(points).astype(\text{np.float64})$
+		\FOR{cada modelo en $likelihood$}
+		\STATE \quad $ev \gets ev + \text{modelo(points)} \times prior$
+		\ENDFOR
+		\STATE \quad \textbf{return} $ev$
+		
+		\STATE \textbf{Función} posterior$(likelihood, prior, points)$
+		\STATE \quad $ev \gets \text{evidence}(likelihood, prior, points)$
+		\STATE \quad $post \gets \{\}$
+		\FOR{cada modelo en $likelihood$}
+		\STATE \quad $post[i] \gets (prior[i] \times likelihood[i](points)) / ev$
+		\ENDFOR
+		\STATE \quad \textbf{return} $post$
+	
+		\RETURN $posterior, likelihood, prior, evidence$
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+Para evaluar la eficacia del clasificador Bayesiano, se utiliza la métrica de Área Bajo la Curva (AUC, por sus siglas en inglés). Esta medida evalúa la capacidad del clasificador para distinguir entre las dos clases. Un AUC de 1 indica un clasificador perfecto, mientras que una AUC de 0.5 sugiere un clasificador que no es mejor que el azar.\\
+
+En el código, la función \textbf{getAUC} dentro del archivo \textbf{BAYES\_KDE\_2.py} se encarga de calcular esta métrica. El procedimiento es el siguiente:
+
+\begin{enumerate}
+\item \textbf{Filtrado de datos de prueba}: se eliminan los valores faltantes (NaN) del conjunto de datos de prueba, tanto para los valores de DPS como para las etiquetas de clase.
+
+
+\item \textbf{Cálculo de Probabilidades a Posteriori}:
+Se utilizan las probabilidades a priori, las verosimilitudes estimadas mediante KDE, y el DPS de prueba para calcular las probabilidades a posteriori de pertenencia a cada clase.
+
+\item \textbf{Cálculo del AUC}:
+Usando las probabilidades a posteriori calculadas para los datos de prueba y las etiquetas verdaderas de los pacientes, se calcula el AUC mediante la función \textbf{roc\_auc\_score} de \textbf{scikit-learn}. Esta métrica cuantifica la capacidad del modelo para diferenciar entre pacientes \textit{CN} y \textit{MCI}.\\
+
+\end{enumerate}
+
+Este proceso permite no solo clasificar a los pacientes en las clases correspondientes según su DPS, sino también evaluar cuán confiables son esas clasificaciones al proporcionar una medida cuantitativa (AUC) de su rendimiento.
+
+\begin{algorithm}
+	\caption{Cálculo del AUC con un Clasificador Bayesiano}
+	\begin{algorithmic}[1]
+		\REQUIRE $dps\_test$, $posterior\_bayes$, $likelihood$, $prior$, $labels$, $classes$
+		\STATE $dps\_test \gets \text{dps\_test.ravel()}$
+		\STATE $dps\_test \gets dps\_test[\sim\text{np.isnan}(dps\_test)]$
+		\STATE $labels \gets \text{labels.stack()}$
+		\STATE $mask\_class \gets \text{np.isin}(labels, classes)$
+		\STATE $labels \gets labels[mask\_class]$
+		\STATE $dps\_test \gets dps\_test[mask\_class]$
+		
+		\STATE $predict\_scores \gets \text{posterior\_bayes}(likelihood, prior, dps\_test)$
+		\STATE $predict\_scores \gets \text{np.column\_stack(list(predict\_scores.values()))}$
+		
+		\STATE $mapping \gets \{nlabel: i \text{ para cada } i, nlabel \text{ en enumerate(classes)}\}$
+		\STATE $labels \gets \text{np.array}([mapping[nlabel] \text{ para cada } nlabel \text{ en } labels])$
+		
+		\IF{len(classes) == 2}
+		\STATE $labels \gets -labels$
+		\STATE $auc \gets \texttt{roc\_auc\_score}(labels, predict\_scores[:, 0], \texttt{average=macro})$
+		\ELSE
+		\STATE $auc \gets \texttt{roc\_auc\_score}(labels, predict\_scores, \texttt{multi\_class=ovo}, \texttt{average=macro})$
+		\ENDIF
+		
+		\RETURN $auc$
+	\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Paso 4. Calcular la correlación de los tiempos de conversión}
+Tras haber obtenido las probabilidades a posteriori de aparición del deterioro cognitivo leve mediante modelos bayesianos, además del Área Bajo la Curva (AUC), se calculan otras métricas para observar la exactitud de predicción de la aparición del declive cognitivo. \\
+
+Para esto, dentro del archivo \textbf{get\_Onset\_3.py} se desarrollaron dos funciones: \textbf{getTrueOnset} y \textbf{get\_Onset\_MCI\_Leaspy\_3}. La primera obtiene el tiempo real en el que los pacientes convierten de \textit{CN} a \textit{MCI}. Utiliza de referencia las edades de los pacientes y las etiquetas de los mismos en cada visita, observando la edad en la que convierten.
+
+\begin{algorithm}
+	\caption{Calcular Edad Real de Inicio de MCI}
+	\begin{algorithmic}[1]
+		\REQUIRE $labels\_test$, $ages\_test$
+		\STATE $I \gets \text{número de sujetos}$
+		\STATE $true\_onset \gets \text{matriz de tamaño } 1 \times I \text{ con NaN}$
+		\STATE $MCI \gets \text{binario donde } labels\_test == "MCI"$
+		
+		\FOR{$i = 1$ \TO $I$}
+		\IF{$MCI[i,:] \text{ contiene 1}$}
+		\STATE $ages \gets \text{edades válidas de } ages\_test[i]$
+		\STATE $idx \gets \text{primer índice donde } MCI[i,:] == 1$
+		\STATE $true\_onset[i] \gets \text{promedio de } ages[idx] \text{ y } ages[idx-1] \text{ (si existe)}$
+		\ENDIF
+		\ENDFOR
+		\RETURN $true\_onset$
+	\end{algorithmic}
+\end{algorithm}
+
+La función llamada \textbf{get\_Onset\_MCI\_Leaspy\_3} sirve para calcular el tiempo de conversión estimado en base a la probabilidad a posteriori, la cual se obtuvo a partir del DPS, de la probabilidad a priori y del \textit{likelihood}. Para esto se utiliza un proceso muy similar al de la función anterior.\\
+
+Finalmente, una vez obtenidos los tiempos reales y estimados de conversión, se calculan parámetros que indican la exactitud del modelo. Las métricas calculadas (\textit{'percentage\_PD\_CU', 'percentage\_PD\_MCI', 'corr\_PD\_MCI\_age', 'corr\_PD\_MCI\_reserve'}) evalúan los siguientes aspectos de rendimiento del modelo:
+\begin{itemize}
+	\item Exactitud en la predicción de sujetos sanos (CU): Mide el porcentaje de sujetos que son predichos correctamente como no-MCI.
+    \item Exactitud en la predicción de MCI: Mide qué porcentaje de sujetos con MCI son correctamente identificados por el modelo.
+	\item Correlación de la edad de conversión: Evalúa si la edad predicha de conversión a MCI se correlaciona bien con la edad observada.
+	\item Correlación de la reserva cognitiva: Evalúa si la tiempo predicho de conversión a MCI se correlaciona bien con el tiempo observado.
+\end{itemize}
+
+\begin{algorithm}
+	\caption{Calcular Edad de Inicio del MCI con Leaspy}
+	\begin{algorithmic}[1]
+		\REQUIRE $DPS\_test$, $posterior\_bayes$, $prior\_bayes$, $likelihood\_bayes$, $ages\_test$, $labels\_test$, $btstrp$
+		\STATE $I \gets \text{Número de sujetos}$
+		\STATE $ages\_onset \gets \text{matriz de } btstrp \times I \text{ con NaN}$
+		\STATE $prob\_MCI \gets \text{matriz de } DPS\_test \text{ con NaN}$
+		
+		\FOR{$n = 1$ \TO $btstrp$}
+		\FOR{$i = 1$ \TO $I$}
+		\STATE $dps\_subj \gets \text{datos del sujeto } i$
+		\STATE $prob\_MCI[i, :, n] \gets \text{calcular probabilidad de MCI}$
+		\ENDFOR
+		\ENDFOR
+		
+		\FOR{$n = 1$ \TO $btstrp$}
+		\FOR{$i = 1$ \TO $I$}
+		\IF{$\text{hay MCI}$}
+		\STATE $ages\_test\_i \gets \text{ajustar edades}$
+		\STATE $idx \gets \text{primer índice de MCI}$
+		\STATE $ages\_onset[n, i] \gets \text{calcular edad de inicio}$
+		\ENDIF
+		\ENDFOR
+		\ENDFOR
+		
+		\STATE $true\_onset \gets \text{calcular edades verdaderas de inicio}$
+		\STATE $metrics \gets \text{calcular métricas de rendimiento}$
+		
+		\RETURN $ages\_onset$, $true\_onset$, $metrics$
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Paralelización de tareas}
+Con el objetivo de reducir el tiempo de ejecución de las tareas del programa, se lleva a cabo la paralelización del mismo. Se crea un nuevo archivo \texttt{.py} en el directorio:
+\begin{center}
+	\texttt{/home/rroca/demo/multi\_leaspy}
+\end{center}
+en el cual se utiliza la librería \textbf{multiprocessing} de Python para ejecutar múltiples procesos en paralelo, utilizando todos los núcleos disponibles en la máquina utilizada.\\
+
+Este proceso se lleva cabo en distintos sistemas:
+\begin{itemize}
+	\item Windows 11 mediante Anaconda Prompt
+	\item Ubuntu 20.04.6 LTS (Curie) mediante Putty
+	\item CentOS Linux release 8.3.2011 (Magerit-3)
+\end{itemize}
+ 
+En los próximos apartados se explican los pasos llevados a cabo para la paralelización en Python y correcta ejecución en cada uno de los sistemas.
+
+\subsection{Paralelización en Curie}
+Para este caso, se crear el archivo \texttt{multi\_leaspy\_parfor.py} encargado de ejecutar en los distintos núcleos disponibles las combinaciones de marcadores para generar y estimar los modelos. \\
+
+Se define una función llamada \textbf{execute\_model()} que se encarga de llamar a \textbf{build\_model()} para cada combinación de variables. Para llevar a cabo la paralelización se crea un \textbf{'Pool'} de procesos utilizando todos los nodos disponibles de la máquina. Esto se cuentan ejecutando \textbf{os.cpu\_count()}. Además, la función \textbf{pool.map(execute\_model, args\_list)} sirve para mandar a \textbf{execute\_model()} cada uno de los grupos de biomarcadores asignados a cada núcleo, permitiendo estimar varios modelos al mismo tiempo.\\
+
+Para ejecutar el código de Python paralelizado desde la máquina de supercomputación Curie con sistema operativo Ubuntu 20.04.6 LTS se utiliza la interfaz de Putty. A continuación se explican lo pasos a llevar a cabo para una correcta ejecución:
+\begin{enumerate}
+	\item Acceder a Curie con usuario y contraseña.
+	\item Utilizando la aplicación \textbf{tmux}, iniciar una nueva sesión o acceder a una ya existente con los comandos:
+	\begin{center}
+		\textbf{tmux new}\\
+		\textbf{tmux attach -t numero\_de\_sesión}
+	\end{center}
+	\item Activar el entorno de trabajo deseado mediante:
+	\begin{center}
+		\textbf{conda activate nombre\_entorno}
+	\end{center}
+	que en este caso nombre\_entorno se correspondera con el entorno de Leaspy.
+	\item Acceder al directorio donde se encuentra el archivo ejecutable:
+	\begin{center}
+		\textbf{cd /home/rroca/demo/multi\_leaspy}
+	\end{center}
+	\item Ejecutar el programa con el comando:
+	\begin{center}
+		\textbf{python multi\_leaspy\_parfor.py}
+	\end{center}
+\end{enumerate}
+
+Además, para casos como este en el que múltiples procesos intentan acceder a recursos compartidos de manera simultanea, es fundamental el uso de un cerrojo o \textbf{'lock'}. Esto se implementa en la función \texttt{append\_to\_excel.py} para evitar que los Excels donde se guardan los valores finales de las prestaciones de los modelos se corrompan.\\
+
+\subsection{Paralelización en Magerit}
+Para ejecutar el programa paralelizado en la máquina de supercomputación Magerit, es necesario utilizar un archivo \textit{shell} .sh.  Este archivo define los parámetros necesarios para la ejecución del trabajo en el clúster y se envía al sistema de colas SLURM (Simple Linux Utility for Resource Management) mediante el comando \texttt{sbatch}. SLURM es un sistema de administración de colas y recursos para clústeres de computación, encargado de gestionar la asignación de recursos, la planificación de tareas y la monitorización de los trabajos en el clúster.\\
+
+El archivo \textbf{multi\_Leaspy\_Magerit.sh} especifica ciertos parámetros que indican como se distribuye y ejecuta el trabajo. Por ejemplo, con \texttt{\#SBATCH --nodes=2} se especifican el número de núcleos y con \texttt{\#SBATCH --ntasks=80} el número de tareas, tal y como se ve en el código \ref{lst:archivo_magerit}. Esto permite distribuir el trabajo en paralelo, ejecutando cada tarea con un núcleo asignado. Además, en este archivo se define la carga del módulo de Anaconda, la activación y configuración del entorno Leaspy y la ejecución del script con el comando \texttt{srun --ntasks=\$SLURM\_NTASKS python /directorio/del/ejecutable.py}.\\
+
+
+
+Para el seguimiento de la ejecución, se generan dos archivos importantes: \textbf{out-\%j.log} y \textbf{err-\%j.log}. En el primero se guarda el progreso y los resultados del programa, y en el segundo se recogen los mensajes de error o advertencias que tienen lugar durante la ejecución. También se crea un directorio temporal donde se almacenan los archivos temporales y el cual se elimina al terminar la ejecución con el comando \texttt{rm -rf \$SCRATCH/\$SLURM\_JOB\_ID}.
+
+En este caso, la paralelización se llevo a cabo utilizando la biblioteca \textbf{mpi4py}, que se enfoca en la programación paralela en un clúster de computación. Esto permite iniciar la comunicación entre los procesos con el comando:
+\begin{center}
+	\textbf{MPI.COMM\_WORLD}
+\end{center}
+dentro de la función \textbf{mpi\_main()}.  Para obtener información del proceso actual, del total de procesos y para enviar argumentos a los mismos se utilizan las funciones:
+\begin{center}
+	\textbf{comm.Get\_rank()}
+	\textbf{comm.Get\_size()}
+	\textbf{comm.send}
+\end{center}
+
+Todo esto se implementa en el archivo ejecutable \textbf{multi\_leaspy\_parfor3.py}\\
+
+
+\begin{lstlisting}[caption={Archivo sh para la ejecución del programa en Magerit}, label={lst:archivo_magerit}]
+	#!/bin/bash
+	##----------------------- Start job description ----------------------- 
+	#SBATCH --partition=standard
+	#SBATCH --job-name=multi_leaspy
+	#SBATCH --nodes=2
+	#SBATCH --ntasks=80
+	#SBATCH --cpus-per-task=1
+	#SBATCH --mem-per-cpu=4096
+	#SBATCH --time=160:00:00
+	#SBATCH --mail-type=ALL
+	#SBATCH --mail-user=raquel.roca.pereira@alumnos.upm.es
+	#SBATCH --output=out-%j.log
+	#SBATCH --error=err-%j.log
+	#SBATCH --chdir=/home/v597/v597521/rroca/multi_leaspy/
+	##------------------------ End job description ------------------------ 
+	
+	# Carga de los modulos necesarios (MATLAB y R)
+	module load Anaconda3/2024.02-1
+	source ~/.bashrc
+	conda activate leaspy
+	
+	# Definicion del directorio SCRATCH
+	export SCRATCH="/home/v597/v597521/rroca/multi_leaspy"
+	mkdir -p $SCRATCH/$SLURM_JOB_ID
+	
+	# Lanzamiento del script
+	srun --ntasks=$SLURM_NTASKS python /home/v597/v597521/rroca/multi_leaspy/multi_leaspy_parfor3.py
+	
+	# Limpieza del directorio SCRATCH
+	rm -rf $SCRATCH/$SLURM_JOB_ID
+\end{lstlisting}
+
+
+
+\subsection{Paralelización en Windows 11}
+Para ejecutar la paralelización en Windows 11 se utilizó la interfaz de Anaconda Prompt, ya que el programa de Python fue desarrollado desde esta aplicación. Esto ayuda a ahorrar tiempo de instalación de paquetes y herramientas ya instaladas previamente. 
+
+En este caso, al contrario que en el sistema operativo de Linux, es necesario añadir alguna modificación al código para evitar problemas de recursión infinita. Por ello, se creo un nuevo archivo con nombre \texttt{multi\_leaspy\_parfor2.py} casi idéntico al del apartado anterior. Se incluyó la condición:
+\begin{center}
+	\texttt{if \_\_name\_\_ == "\_\_main\_\_":
+	}
+\end{center} 
+previa a la ejecución de de la función de paralelización \textbf{pool.map(execute\_model, args\_list)}. Esto sirve para evitar que esta parte del script se ejecute cuando es importada como módulo a un proceso hijo, asegurando que la creación de procesos solo ocurra una vez en el proceso principal.
+
+Para la ejecución desde Windows es necesario hacer lo siguiente:
+\begin{enumerate}
+	\item Acceder a Anaconda Prompt desde la CPU.
+	\item Activar el entorno correcto mediante:
+	\begin{center}
+		\textbf{conda activate nombre\_entorno}
+	\end{center}
+	que en este caso nombre\_entorno se corresponderá con el entorno de Leaspy.
+	\item Acceder al directorio donde se encuentra el archivo ejecutable:
+	\begin{center}
+		\textbf{cd C:/ruta/del/directorio/del/script}
+	\end{center}
+	\item Ejecutar el programa con el comando:
+	\begin{center}
+		\textbf{python multi\_leaspy\_parfor2.py}
+	\end{center}
+\end{enumerate}

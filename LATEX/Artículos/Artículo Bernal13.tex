@@ -1,0 +1,135 @@
+\documentclass[12pt]{article}
+
+\begin {document}
+\section{Statistical analysis of longitudinal neuroimage data with Linear Mixed Effects models}
+
+
+\subsection{Introducción}
+En resumen, los estudios de neuroimagen longitudinal (LNI) están en auge debido a su capacidad para proporcionar un mayor poder estadístico y comprender la dinámica temporal de procesos biológicos. Sin embargo, a menudo carecen de herramientas estadísticas maduras y sofisticadas debido a la complejidad técnica y a la falta de software de fácil uso.\\
+
+Los Modelos Lineales de Efectos Mixtos (LME) se destacan como un marco estadístico flexible y poderoso para analizar datos longitudinales. En este artículo, se comparan los fundamentos teóricos de los LME con otros métodos comunes utilizados en LNI, como el Análisis de Varianza (ANOVA), el análisis transversal de mediciones resumidas y estrategias de dos etapas. Se demuestra que los métodos convencionales presentan limitaciones, como la incapacidad para manejar tiempos imperfectos o datos desequilibrados.\\
+
+Además, se describe y analiza el enfoque del modelo lineal (LME) para estudios longitudinales, junto con las herramientas computacionales que lo implementan. Se utiliza una base de datos de resonancia magnética estructural longitudinal de la Iniciativa de Neuroimagen de la Enfermedad de Alzheimer (ADNI) para ejemplificar la aplicación de estos métodos en diferentes funciones de análisis.
+
+\subsection{Métodos y materiales}
+\subsubsection{Características de datos longitudinales}
+
+Los datos longitudinales son un método para estudiar los resultados midiendo repetidamente variables en una cohorte de individuos en múltiples momentos. Así, se analizan los cambios a lo largo del tiempo y su asociación con factores clínicos, experimentales o biológicos. Permite la evaluación directa de los cambios dentro del sujeto en diferentes momentos, lo que permite estimaciones y predicciones más precisas sobre la trayectoria de medición de un individuo.\\ Los datos longitudinales exhiben varias características distintivas:
+\begin{itemize}
+	\item Están ordenados en el tiempo. Reflejan la trayectoria temporal de un proceso continuo no estacionario subyacente.
+	\item Están típicamente correlacionados positivamente para mediciones en serie para un solo sujeto.
+	\item No son una variación constante entre sujetos durante la duración del estudio
+	\item Es común la falta de datos y los tiempos de medición no uniformes.
+\end{itemize}
+ 
+\subsubsection{Modelado Lineal de Efectos Mixtos para datos longitudinales}
+
+El modelado lineal de efectos mixtos (LME) es un método estadístico utilizado para datos longitudinales que modela la trayectoria de medición media a lo largo del tiempo y la estructura de correlación entre mediciones en serie. LME utiliza el paradigma de regresión lineal para describir la medición promedio y su trayectoria temporal, lo que permite datos desequilibrados.\\
+
+Hay tres fuentes con potencial de variabilidad que influyen en la estructura de correlación en los datos longitudinales: la variación entre sujetos, el cambio biológico inherente dentro del sujeto y el error de medición. Los modelos LME también proporcionan modelos de covarianza flexibles y parsimoniosos, ya que introduce efectos aleatorios para estructurar la covarianza.\\
+
+El modelo LME se basa en la siguiente ecuación:
+\begin{center}
+	$Y_{i} = X_{i}\beta + Z_{i}b_{i} + e_{i}$
+\end{center}
+
+Donde $Y_{i}$ es el vector $n_{i}\times1$ de mediciones en serie para el sujeto i, $n_{i}$ es el número de mediciones en serie específicas del sujeto, $X_{i}$ es la matriz $n_{i}\times p$ de diseño de sujetos para efectos fijos, $\beta$ es un vector $p\times 1$ de coeficientes de regresión de efectos fijos desconocidos, $Z_{i}$ es la matriz de diseño $n_{i}\times q$, con $q\leq p$ para efectos aleatorios, y $b_{i}$ es un vector $q\times 1$ de efectos aleatorios y $e_{i}$ es un vector $n_{i}\times 1$ de errores de medición.\\
+
+ El modelo distingue entre los medios convencionales y marginales, siendo la media condicional o específica de $Y_{i}$:\\
+ \begin{center}
+ 	$ E(Y_{i}|b_{i}) = X_{i}\beta + Z_{i}b_{i}$
+ \end{center}y la media marginal o promediada poblacional de $Y_{i}$:\\
+  \begin{center}
+  	$E(Y_{i}) = X_{i} \beta$
+  \end{center}
+  siendo $\beta$ el parámetro de regresión de la población e I coeficientes de regresión específicos del sujeto.\\
+  
+  
+El modelo LME permite el análisis explícito de fuentes de variación entre sujetos (D) y dentro de los sujetos ($\sigma 2$), con la covarianza marginal expresada como una función de efectos aleatorios que varían en el tiempo.\\
+
+El coeficiente $\beta$ y los parámetro $\sigma $ y D son desconocidos. Por ello, para su estimación se utilizan los supuestos distributivos del siguiente vector de medidas. 
+\begin{center}
+	$Y_{i}\sim N(X_{i},\beta,Z_{i}DZ_{i}^{T} + \sigma ^{2} I_{n_{i}})$
+\end{center}
+La estimación de máxima verosimilitud de $\beta$ se hace de la siguiente forma:
+
+\begin{center}
+	$\hat{\beta}=(\sum_{i=1}^{m}X_{i}^{T} \hat{\epsilon}_{i}^{-1}X_{i})^{-1} \sum_{i=1}^{m} X_{i}^{T} \hat{\epsilon}_{i}^{-1}y_{i}$
+\end{center}
+
+Mientras que $\sigma $ y D se estiman mediante el procedimiento ReML, el cual no tiene una solución cerrada para su optimización. Entonces, se implementan tres métodos muy utilizados: 
+\begin{itemize}
+	\item Algoritmo de maximización de expectativas (EM).
+	\item Esquema de puntuación de Fisher.
+	\item Dos métodos basados en Newton-Raphson.
+
+\end{itemize}
+
+Para determinar la estructura de covarianza de un modelo es necesario seleccionar efectos aleatorios. Una buena estrategia es el uso de la prueba de razón de verosimilitud para comparar la probabilidad de modelos anidados, siguiendo el siguiente proceso: se comienza con un modelo básico, se estiman los parámetros y coeficientes, se agregan efectos aleatorios y se evalúa la importancia de un aumento de probabilidad utilizando una estadística de mezcla de chi-cuadrado.\\
+
+Por otra parte, se realizan pruebas de hipótesis en las que se utiliza $\hat{\beta}$ y su matriz de covarianza asintótica estimada:
+\begin{center}
+	$C \hat{o} v_{asymptotic}(\hat{\beta})=(\sum_{i=1}^{m}X_{i}^{T} \hat{\epsilon}_{i}^{-1}X_{i})^{-1}$
+\end{center}
+
+Las dos hipótesis que se contrastan son:
+\begin{center}
+	H0: $L \beta = 0$\\HA: $L \beta \neq 0$
+\end{center}
+Además,sabiendo que la distribución F se cumple bajo la hipótesis nula, se obtienen los grados de libertad implementando una aproximación basada en Satterhwaite para una estadística F escalada. Quedando la distribución de la siguiente forma:
+\begin{center}
+	$F=\frac{\mathit{k}(L\hat{\beta})^{T}(LC\hat{o}v_{KR}(\hat{\beta})L^{T})^{-1}L\hat{\beta}}{rank(L)}$
+\end{center}
+
+
+
+\subsubsection{Estimación del tamaño de muestra y el análisis del poder estadístico}
+
+En los diseños longitudinales, es complicada la estimación del tamaño de muestra y el análisis del poder estadístico. \\
+
+Se proporcionan dos métodos aproximados para realizar cálculos de potencia: uno para planificar antes de la recopilación de datos y el otro para estimar el poder de un estudio realizado después de la recopilación de datos. En el primero, se basa en una extensión del tamaño de muestra y fórmulas de potencia para un estudio transversal con una medición univariada. Mientras que el segundo da una aproximación más precisa de la potencia de un experimento realizado, basada en una aproximación F no central a la distribución del estadístico F bajo la hipótesis alternativa. 
+
+
+\subsubsection{Métodos alternativos para analizar LNI}
+
+El análisis de datos de neuroimagen longitudinal (LNI) ha sido un tema de interés en los últimos años. Dos métodos comunes para el análisis de este tipo de datos incluyen ANOVA de medidas repetidas y valores resumidos.\\ 
+
+El primer método, que equivale a un modelo lineal con como máximo un único efecto aleatorio, es más adecuado para datos longitudinales equilibrados con un pequeño número de mediciones en serie. Sin embargo, este método no es adecuado para datos longitudinales, ya que se espera que la correlación entre mediciones repetidas disminuya con separaciones crecientes en el tiempo.\\
+
+ El segundo método, que reduce la secuencia de medidas repetidas para cada individuo a valores resumidos, no es adecuado para datos no balanceados, ya que las medidas resumidas no se extraerán de la misma distribución y pueden tener una varianza diferente. Además, ignorar la correlación entre medidas repetidas y omitir sujetos con un solo punto temporal puede conducir a una pérdida significativa de poder estadístico.
+
+
+\subsubsection{Datos longitudinales del ADNI}
+
+El estudio utilizó datos de resonancia magnética cerebral longitudinal de la Iniciativa de Neuroimagen de la Enfermedad de Alzheimer (ADNI) y aplicó FreeSurfer, un proceso automático que calcula mediciones de espesor en diversas representaciones cerebrales. Esto incluye superficies corticales, segmentación de sustancia blanca, extracción del cráneo, corrección del campo de polarización, registro cortical y etiquetado de regiones cerebrales.\\
+
+El estudio se enfocó en dos biomarcadores clave para la enfermedad de Alzheimer (EA): grosor medio en la corteza entorrinal (ECT) y volumen total del hipocampo (HV). Estos marcadores están fuertemente asociados con la EA temprana. Se realizó un análisis adicional para evaluar el impacto del tipo de bobina en la medición del volumen del hipocampo, encontrando que dos tipos de bobinas afectaban significativamente las mediciones.\\
+
+En los análisis, se consideraron variables independientes como: tiempo desde el inicio, pertenencia al grupo clínico, edad inicial, sexo, genotipo APOE, educación, entre otros. Se evaluaron efectos aleatorios y se limitó el análisis a la asociación entre la interacción grupo-tiempo para HV y ECT en el ADNI longitudinal.
+
+
+\subsection{Resultados}
+En primer lugar, en este estudio se comparan las tasas de atrofia de cuatro grupos clínicos: personas sanas (HC), deterioro cognitivo leve estable (sMCI), deterioro cognitivo leve con progresión (cMCI) y pacientes con enfermedad de Alzheimer (AD), enfocándose en la atrofia cerebral.\\
+
+Tras probar diversas hipótesis, se obtuvieron diferentes resultados que afirmaron diferencias significativas en la atrofia cerebral entre estos grupos. Destacó el mayor poder de detección utilizando el grosor medio de la corteza entorrinal (ECT). Además, se proporcionaron aproximaciones del tamaño de muestra para futuros estudios que comparan las tasas de atrofia entre sMCI vs. cMCI y AD vs. HC, basadas en el tamaño del efecto y las tasas de deserción calculadas a partir de la muestra de ADNI.\\
+
+En segundo lugar, se compararon las tasas de atrofia entre sujetos sanos y sujetos con conversión de HC (cHC), que progresaron a deterioro cognitivo leve o EA con el tiempo. Se compararon las tasas de pérdida de volumen cerebral (HV) y grosor cortical (ECT) entre ambos grupos y se observó que los convertidores tenían cambios en la corteza entorrinal (ECT) que seguían un patrón no lineal. Se realizaron pruebas para comparar estas trayectorias y sus cambios a lo largo del tiempo. Los resultados indicaron diferencias significativas en las trayectorias y pendientes entre los grupos de estudio.\\
+
+ Además, se evaluó cuánto poder tenían estos resultados para detectar cambios en la atrofia. En este análisis, el volumen cerebral (HV) resultó ligeramente más efectivo que el grosor cortical (ECT).\\
+ 
+ Por otra parte, se realiza un experimento adicional que compara la metodo-logía LME con otros métodos alternativos, como el ANOVA de medidas repetidas (rm-ANOVA) y el análisis transversal de la pendiente (x-slope). Se estudió su precisión y fiabilidad en detectar diferencias entre personas sanas y pacientes con Alzheimer, concluyendo que, para grupos no muy grandes, el LME y x-slope son más efectivos. Además, el LME es más sensible a los cambios de los indicadores de la enfermedad y es más consistente entre muestras diferentes.\\
+ 
+ Finalmente, se explora el efecto de incluir sujetos con un solo punto temporal en el análisis de datos longitudinales. Se demuestra que incluir estos sujetos puede mejorar la precisión del modelo y, por ende, mejorar la inferencia realizada en el estudio.
+
+
+\subsection{Conclusión}
+En resumen, este estudio resalta la utilidad de los modelos de efectos mixtos lineales (LME) para analizar datos de neuroimagen a lo largo del tiempo. Los LME son eficaces al lidiar con datos desequilibrados y con sujetos que solo tienen una medición, ofreciendo una forma precisa de entender cómo cambian ciertas medidas cerebrales en diferentes condiciones de salud.\\
+
+En tres experimentos, aplicaron LME a datos del cerebro para comparar tasas de atrofia en distintos grupos (personas sanas, con deterioro cognitivo, y pacientes con Alzheimer). Mostraron que los LME proporcionan sensibilidad y especificidad superiores en la detección de cambios cerebrales que otros métodos comunes. Además, demostraron que incluir a personas con solo una medición mejora la precisión de los resultados.\\
+
+En conclusión, los LME son esenciales para entender cómo evolucionan los cambios en el cerebro con el tiempo. Este estudio promueve su uso y ofrece herramientas que amplían su aplicabilidad en análisis de imágenes cerebrales a lo largo del tiempo.
+
+
+
+
+\end{document}

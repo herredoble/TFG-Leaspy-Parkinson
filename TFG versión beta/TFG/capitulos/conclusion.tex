@@ -1,0 +1,25 @@
+\chapter{Conclusiones}
+
+Se presentan a continuación las conclusiones del estudio realizado en este trabajo y una propuesta de futuras tareas para su continuación y mejora. 
+
+
+\section{Conclusión}
+
+Este trabajo se centró en la predicción del deterioro cognitivo en pacientes con enfermedad de Parkinson utilizando Leaspy, una herramienta de software desarrollada para estimar el avance de enfermedades neurodegenerativas. A lo largo de este estudio, se analizaron los datos longitudinales de una cohorte de 423 pacientes, con el objetivo de evaluar la efectividad de los modelos de progresión de la enfermedad (DPMs) estimados mediante este entorno.\\
+
+En cuanto a la identificación de biomarcadores que influyen en la aparición del declive cognitivo, se consiguieron resultados prometedores. El análisis realizado con los datos de los pacientes al inicio del estudio, reveló que marcadores como el SDMT y el MEANCAU son significativos en la progresión de la enfermedad. Tanto en el avance desde un estado cognitivamente normal (CU) hasta uno de deterioro cognitivo leve (MCI), como en la evolución hacia la demencia. Estos resultados concuerdan con los de la bibliografía existente y sirven para indicar la importancia de estos marcadores en el seguimiento clínico de los pacientes.\\
+
+Para evaluar la predicción de la progresión de la enfermedad, se desarrolló un algoritmo utilizando Leaspy que permitió estimar la trayectoria de la enfermedad, tanto para un único paciente como para toda la cohorte de 423 individuos. Las curvas estimadas para los pacientes individuales mostraron una buena concordancia con las observaciones tomadas, lo que sugiere que Leaspy tiene el potencial de ser una herramienta útil para la predicción personalizada de la evolución del Parkinson en sujetos nuevos. Sin embargo, al aplicar el modelos al conjunto completo de pacientes, se observaron algunas limitaciones, particularmente en la precisión de la detección de sujetos con deterioro cognitivo leve. Estos resultados indican que, aunque Leaspy puede ofrecer predicciones robustas en ciertos contextos, su rendimiento es variable y puede depender en gran medida de la selección y el número de biomarcadores utilizados.\\
+
+La comparación con el método RPDPM (\textit{Robust Parametric Disease Progression Modeling}) indicó que, aunque Leaspy muestra ventajas en algunos aspectos como la detección de sujetos congitivamente normales y la correlación con la reserva cognitiva, el RPDPM fue en general más preciso detectando pacientes MCI y en la estimación del AUC. En conclusión, RPDPM es un método más adecuado para el pronóstico del avance de la enfermedad de Parkinson y para la predicción de su evolución, puesto que mantiene su precisión empleando un bajo número de marcadores observados, siendo beneficioso para su aplicación clínica.\\
+
+
+\section{Desarrollos futuros}
+
+Tras las conclusiones obtenidas, se sugieren posibles desarrollos a llevar a cabo en un futuro. En primer lugar, se deberían generar modelos con combinaciones de biomarcadores distintas y con vectores de mayor y de menor tamaño a los generados en este trabajo. El objetivo sería encontrar una combinación de características que muestre mejores resultados que las obtenidas hasta el momento. \\
+
+Además, sería relevante la comparación de los métodos utilizados (Leaspy y RPDPM) con otros modelos de progresión de la enfermedad aplicándolo a la aparición del deterioro cognitivo en el Parkinson. \\
+
+También se podría considerar la aplicación de los modelos generados a otras cohortes de pacientes, más allá de los datos disponibles en la PPMI, para evaluar la generalización de los resultados y la robustez de las predicciones en diferentes poblaciones.\\
+
+Por último, otro posible desarrollo a llevar a cabo sería la implementación de estos modelos en una plataforma de software clínico. Esto implicaría el desarrollo de interfaces de usuario intuitivas y la integración con sistemas de historia clínica electrónica, permitiendo a los médicos utilizar estas herramientas predictivas en tiempo real para el seguimiento y tratamiento de pacientes con Parkinson.

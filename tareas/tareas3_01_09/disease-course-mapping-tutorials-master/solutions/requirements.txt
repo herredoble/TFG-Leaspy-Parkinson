@@ -1,0 +1,15 @@
+leaspy>=1.2,<1.3
+torch>=1.7.1  # temporary needed until fix in Leaspy since we use torch.clip in simulation, without enforcing torch>=1.7 for now
+
+matplotlib>=3.1.3,<4
+pandas>=1.3.2,<2
+scipy>=1.6.3,<2
+numpy>=1.16.6,<2
+joblib>=0.13.2,<2
+statsmodels>=0.12.1,<1
+
+seaborn>=0.11,<1
+tqdm>=4.50
+
+jupyterlab>=2.2.10
+notebook>=6.0.3

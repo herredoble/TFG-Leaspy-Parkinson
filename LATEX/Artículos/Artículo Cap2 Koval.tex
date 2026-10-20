@@ -1,0 +1,70 @@
+\documentclass[12pt]{article}
+
+\begin {document}
+\section{Estimation}
+\subsection{Aprendizaje estadístico y algoritmos}
+En primer lugar, el siguiente modelo correspondiente al i-ésimo sujeto, representa la dependencia de su variable de salida ($y_{i}$) en función de las variables aleatorias del mismo ($z_{i}$) y de los parámetros del modelo($\theta$). Para datos longitudinales, el grupo de observaciones en distintos momentos es $y_{i}=(y_{ij})_{j}$
+\begin{center}
+	$y_{i}=f(\theta,z_{i})+\epsilon_{i}$
+\end{center}
+
+El principal objetivo es maximizar la verosimilitud buscando los parámetros que mejor describan las observaciones. Para ello, se desarrollaron diferentes algoritmos que se encargan de estimar los parámetros de modelos estadísticos. Cada uno centrado en resolver desafíos específicos utilizando enfoques iterativos:
+
+\begin{description}
+	\item {\textbf{Algoritmo E-M: }}Expectation-Maximization.\\
+	Debido a la dependencia con variables latentes \textit{z}, que suelen ser desconocidas, es complicado maximizar la verosimilitud directamente. Para solucionar esto, con este algoritmo se itera alternando entre el paso de Expectación, encargado de calcular a partir de $\theta(0))$  la expectativa de las variables latentes, y el paso de Maximización, que haya los parámetros $\theta(k)$ para maximizar la función anterior.
+	
+	\item {\textbf{Algoritmo SAEM: }}Stochastic Approximation Expectation Maximization.\\
+	Desarrollado debido a la difícil optimización de la verosimilitud en modelos no lineales con variables latentes. Consiste en sustituir el paso de Expectación del algoritmo anterior por el de Aproximación Estocástica. En este se utilizan muestras $z^{k}$ para acercarse a la cantidad deseada. Además, tiene una fase de "quemado" al inicio, que opera con $\mathcal{Q}_{k}(\theta)=log\ p(y,z^{(k)};\theta)$, crucial para explorar el espacio de soluciones. También realiza la actualización iterativa de los parámetros.
+	
+	\item {\textbf{Algoritmo MCMC-SAEM: }}Monte Carlo Markov Chain SAEM.\\
+	Surge debido la posibilidad de que $p(z|y;\theta^{(k)})$ sea desconocida. Mediante el teorema de Bayes, se expresa en función de términos del modelo, del valor previo de variables ocultas y una constante de normalización.
+	\begin{center}
+		$p(\mathbf{z}|\mathbf{y};\theta^{(k)})=\frac{p(\mathbf{y}|\mathbf{z};\theta^{(k)})p(\mathbf{z};\theta^{(k)})}{p(\mathbf{y};\theta^{(k)})}$
+	\end{center}
+	Para solucionar esto, primero se realiza la aproximación de las muestras $z^{(k+1)}$  que sigan la distribución $p(z^{(k)}|y;\theta^{(k)})$, con el algoritmo de Metropolis-Hasting mediante el método de cadena de Markov. También se sustituye el procedimiento de muestreo por el MCMC y se hace converger hacia un punto crítico de verosimilitud observada $p(y|z)$ con el algoritmo de MCMC-SAEM. Para simplificar el logaritmo de verosimilitud se establece que el modelo pertenece a la familia exponencial. Además, solo se calcula y propaga el vector $\mathit{S}(\mathbf{y},\mathbf{z})$ para lograr una reducción computacional y se actualizan los parámetros $\theta^{(k+1)}$ en la Maximización.
+	
+	\item {\textbf{Algoritmo Hasting Metropolis within Gibbs sampler }}\\
+	En el caso de variables multivariadas se puede complicar el muestreo de $z^{(k)}$ mediante cadena de Markov. Por ello, se desarrollo este algoritmo en el que $\mathbf{z}=(\mathbf{z}_{l})_{1\leq l\leq L}$ y $p(\mathbf{z}_{l}|\mathbf{z}_{\bar{l}}, \mathbf{y};\theta)$	​ es conocida hasta una constante $(\mathbf{z}_{\bar{l}}=\mathbf{z} \backslash \{{\mathbf{z}_{l}}\})$, pudiendo muestrear las coordenadas de \textbf{z}. Al realizar el muestreo utilizando el muestreador de Hasting Metropolis se llega al algoritmo de de Hasting Metropolis dentro del muestreador de Gibbs.
+\end{description}
+
+\subsection{Estimación del modelo de progresión de la enfermedad}
+En la siguiente ecuación, se ve un modelo de efectos mixtos de progresión espacio-temporal parametrizado por $\theta_{geom}$ (parámetros geométricos) y $z_{i}$ (variables ocultas individuales de la variación en la progresión promedio grupal). Estas últimas dan lugar a un conjunto global de parámetros $\theta=(\theta_{geom}, \theta_{\mathbf{z}})$.
+\begin{center}
+	$y_{ij}=f(\theta_{geom},\mathbf{z}_{i},t_{ij})+\epsilon_{ij}$ donde $\epsilon_{ij} \sim \mathcal{N}(0, \gamma^{2})$
+\end{center}
+
+La verosimilitud del modelo se formula de la siguiente forma:
+\begin{center}
+	$p(\mathbf{y};\theta) = \int p(\mathbf{y}|\mathbf{z};\theta)p(\mathbf{z};\theta)dz$
+\end{center}
+
+A raíz de esto, se caracterizan los siguientes procesos estadísticos:
+\begin{description}
+	\item {\textbf{Calibración.}}\\
+	En esta fase, el objetivo es calcular los parámetros $\hat{\theta}$ para maximizar la verosimilitud del modelo de progresión de la enfermedad y su variabilidad. Para converger hacia un máximo local en la distribución posterior, se usa el algoritmo MCMC-SAEM (variables ocultas desconocidas y supuesto modelo de familia exponencial). \\
+	
+	Para este proceso, es importante tener en cuenta lo siguiente:
+	\begin{itemize}
+		\item Identificabilidad estructural: asegura que no haya varios grupos de parámetros generando la misma distribución.
+		\item Identificabilidad práctica: Está relacionado con la calidad y la cantidad de las medidas. Para afrontar problemas en esta parte de nuestro modelo, se realiza una reparametrización.
+	\end{itemize}
+	\item {\textbf{Personalización.}}\\
+	Consiste en maximizar la verosimilitud $p(\mathbf{y}_{i}, \mathbf{z}_{i};\hat{\theta})=p(\mathbf{y}_{i}| \mathbf{z}_{i};\hat{\theta})p( \mathbf{z}_{i};\hat{\theta})$ calculando el mejor valor de los efectos aleatorios $\mathbf{z}_{i}^{*}$, teniendo en cuenta un conjunto de datos longitudinales \textit{\textbf{y}} y $\hat{\theta}$ que maximiza $p(\mathbf{y},\theta)$. Dos procedimientos utilizados para la optimización son el método L-BFGS o el método de Powell. Otra alternativa es iterar \textit{K} veces con los parámetros individuales el algoritmo MCMC-SAEM.\\
+	
+	Que el individuo personalizado pertenezca o no al conjunto de calibración deriva en la práctica en resultados similares. Por otra parte, a mayor numero de observaciones del sujeto, mayor es la posibilidad de las mediciones individuales difieran del promedio del grupo.	
+	
+	\item {\textbf{Reconstrucción, imputación de valores faltantes y predicción.}}\\
+	Una vez obtenida la trayectoria espacio-temporal individual, a partir de $\mathbf{z}_{i}^{*}$ devuelto por el proceso de personalización, se realiza uno de los siguientes procesos dependiendo del rango de tiempos con el que se trabaje:
+	\begin{itemize}
+		\item Reconstrucción ($t_{i1}<t<t_{ik_{i}}$): Reconstruye los dato del modelo $y_{ij}^{*}=f(\theta, \mathbf{z}_{i}^{*}, t_{ij})$, apareciendo un error $||y_{ij}-y_{ij}^{*}||$.
+		\item Imputación de valores faltantes ($t_{i1}<t<t_{ik_{i}}$ y $t \notin \{t_{i1},...,t_{ik_{i}}\}$): Calcula valores que no se han encontrado en el conjunto inicial $y_{ij}^{*}=f(\theta, \mathbf{z}_{i}^{*}, t_{ij})$.
+		\item Predicción ($t>t_{ik_{i}}$): Calcula las medidas en tiempos futuros, cuya precisión se basa en querer traspasar el escenario a largo plazo grupal a cada individuo. Es poco realista predecir etapas que estén fuera de la base de datos de entrenamiento, por ser dinámicas desconocidas.
+	\end{itemize}
+	
+	\item {\textbf{Simulación.}}\\
+	Por último, tras haber obtenido los parámetros óptimos $\hat{\theta}$ y las variables ocultas individuales, se realiza este procedimiento para simular sujetos virtuales. Esto permite crear cohortes con mayor numero de pacientes, de visitas y una mayor precisión temporal. Para saber la calidad de la cohorte simulada la comparamos con la distribución de las variables ocultas y las salidas finales de la cohorte original. Esta funcionalidad también permite corregir sesgos, como por ejemplo el incluir preferentemente pacientes con más visitas. 
+	
+
+\end{description}
+\end{document}

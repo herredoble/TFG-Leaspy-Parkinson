@@ -1,0 +1,44 @@
+{
+  "leaspy_version": "1.4.0",
+  "name": "logistic",
+  "features": [
+    "RAVLT_immediate",
+    "ADAS13"
+  ],
+  "dimension": 2,
+  "source_dimension": 1,
+  "noise_model": "gaussian_diagonal",
+  "parameters": {
+    "g": [
+      0.13011963665485382,
+      -0.008882035501301289
+    ],
+    "v0": [
+      -3.928337812423706,
+      -3.7955236434936523
+    ],
+    "betas": [
+      [
+        -0.13596127927303314
+      ]
+    ],
+    "tau_mean": 72.13074493408203,
+    "tau_std": 14.084028244018555,
+    "xi_mean": 0.0,
+    "xi_std": 0.6792135834693909,
+    "sources_mean": 0.0,
+    "sources_std": 1.0,
+    "noise_std": [
+      0.14075706899166107,
+      0.14368578791618347
+    ],
+    "mixing_matrix": [
+      [
+        0.10191456973552704
+      ],
+      [
+        -0.08999382704496384
+      ]
+    ]
+  }
+}
